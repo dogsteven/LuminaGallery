@@ -27,9 +27,9 @@ LuminaGallery is a private, personal image gallery application designed for secu
 
 ## Development Context for AI Agents
 
-- **Entry Point:** Start by reviewing the [Documentation Index](file:///Users/rio/AndroidStudioProjects/LuminaGallery/docs/README.md).
-- **Architecture & Standards:** Refer to the [Architecture Guide](file:///Users/rio/AndroidStudioProjects/LuminaGallery/docs/architecture_guide.md) and [Technical Guide](file:///Users/rio/AndroidStudioProjects/LuminaGallery/docs/technical_guide.md).
-- **Feature History:** See the [Epic Journal](file:///Users/rio/AndroidStudioProjects/LuminaGallery/docs/implementation/image_gallery/journal.md) and [Epic Summary](file:///Users/rio/AndroidStudioProjects/LuminaGallery/docs/implementation/image_gallery/summary.md) for the "Private Image Gallery Core" epic.
+- **Entry Point:** Start by reviewing the [Documentation Index](docs/README.md).
+- **Architecture & Standards:** Refer to the [Architecture Guide](docs/architecture_guide.md) and [Technical Guide](docs/technical_guide.md).
+- **Feature History:** See the [Epic Journal](docs/implementation/image_gallery/journal.md) and [Epic Summary](docs/implementation/image_gallery/summary.md) for the "Private Image Gallery Core" epic.
 - **Current State:** The application is a single-module project (`:app`). ViewModels for core features are Activity-scoped to ensure state durability.
 - **Security:** Always prioritize data isolation. Images are stored in `filesDir` and shared only via `FileProvider`.
 
