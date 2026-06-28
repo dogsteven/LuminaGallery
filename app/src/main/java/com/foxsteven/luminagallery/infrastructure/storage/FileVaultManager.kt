@@ -43,22 +43,27 @@ class FileVaultManager @Inject constructor(
         }
         BitmapFactory.decodeFile(originalFile.absolutePath, options)
 
-        val targetWidth = 512
-        val targetHeight = 512
-        options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
+        val targetSize = 256
+        options.inSampleSize = calculateInSampleSize(options, targetSize, targetSize)
         options.inJustDecodeBounds = false
 
-        val bitmap = BitmapFactory.decodeFile(originalFile.absolutePath, options)
-        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
+        val sourceBitmap = BitmapFactory.decodeFile(originalFile.absolutePath, options) ?: throw IllegalArgumentException("Could not decode file")
+        
+        // Center crop to square
+        val dimension = minOf(sourceBitmap.width, sourceBitmap.height)
+        val x = (sourceBitmap.width - dimension) / 2
+        val y = (sourceBitmap.height - dimension) / 2
+        
+        val croppedBitmap = Bitmap.createBitmap(sourceBitmap, x, y, dimension, dimension)
+        val scaledBitmap = Bitmap.createScaledBitmap(croppedBitmap, targetSize, targetSize, true)
 
         FileOutputStream(destFile).use { output ->
             scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 85, output)
         }
         
-        bitmap.recycle()
-        if (scaledBitmap != bitmap) {
-            scaledBitmap.recycle()
-        }
+        if (sourceBitmap != scaledBitmap) sourceBitmap.recycle()
+        if (croppedBitmap != scaledBitmap && croppedBitmap != sourceBitmap) croppedBitmap.recycle()
+        scaledBitmap.recycle()
 
         return "thumbnails/$fileName"
     }

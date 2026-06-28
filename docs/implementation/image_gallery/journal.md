@@ -18,8 +18,8 @@ A fully functional, single-module Android application featuring:
 ---
 
 ## Project Status Summary
-- **Current Phase:** Phase 5: Tagging System
-- **Overall Progress:** 50%
+- **Current Phase:** Phase 6: Advanced Filtering & Saved Criteria
+- **Overall Progress:** 62.5%
 - **Last Updated:** 2026-06-28
 
 ---
@@ -32,7 +32,8 @@ A fully functional, single-module Android application featuring:
 | **Phase 2** | Private Storage & Import Mechanism | ✅ Completed | Import images from system, generate thumbnails, save to private storage. |
 | **Phase 3** | Basic Gallery Grid & Thumbnail Loading | ✅ Completed | Scrollable grid with thumbnails loaded via Coil. |
 | **Phase 4** | Full-screen Viewer & Zooming | ✅ Completed | Navigation, Detail Screen, and Telephoto zoom integration. |
-| **Phase 5** | Tagging System | ⏳ Pending | |
+| **Phase 5** | Tagging System | ✅ Completed | Bottom Bar navigation, Tag management UI, and Image detail tagging. |
+| **Phase 6** | Advanced Filtering & Saved Criteria | ⏳ Pending | |
 | **Phase 6** | Advanced Filtering & Saved Criteria | ⏳ Pending | |
 | **Phase 7** | Biometric Security & App Lock | ⏳ Pending | |
 | **Phase 8** | External Integration | ⏳ Pending | |
@@ -40,6 +41,17 @@ A fully functional, single-module Android application featuring:
 ---
 
 ## Implementation Log
+
+### 2026-06-28: Phase 5 Completed
+- **Activity:** Implemented tagging system and Bottom Navigation.
+- **Achievements:**
+    - Refactored `MainActivity` with a global `Scaffold` and `NavigationBar`.
+    - Created `TagManagementScreen` for global tag creation and deletion.
+    - Integrated tagging into `ImageDetailScreen` using a `ModalBottomSheet` and Material 3 chips.
+    - Implemented `TagService` to coordinate tagging logic.
+    - Refined thumbnail generation to use 256x256 center-cropped images for better performance and UI consistency.
+    - Added unit tests for `TagService` and `TagViewModel` (22 total tests passing).
+- **Next Steps:** Begin Phase 6 (Advanced Filtering & Saved Criteria).
 
 ### 2026-06-28: Phase 4 Completed
 - **Activity:** Implemented full-screen viewer and pinch-to-zoom.

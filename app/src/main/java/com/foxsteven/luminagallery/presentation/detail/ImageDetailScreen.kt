@@ -1,18 +1,21 @@
 package com.foxsteven.luminagallery.presentation.detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
@@ -27,6 +30,7 @@ fun ImageDetailScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showTagSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -41,9 +45,15 @@ fun ImageDetailScreen(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = { showTagSheet = true }) {
+                        Icon(Icons.Default.Info, contentDescription = "Image Info")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
                 )
             )
         },
@@ -73,8 +83,102 @@ fun ImageDetailScreen(
                         modifier = Modifier.fillMaxSize(),
                         state = rememberZoomableImageState(rememberZoomableState())
                     )
+
+                    if (showTagSheet) {
+                        ModalBottomSheet(
+                            onDismissRequest = { showTagSheet = false },
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ) {
+                            TagSheetContent(
+                                assignedTags = state.assignedTags,
+                                availableTags = state.availableTags,
+                                onAddTag = { viewModel.addTag(it) },
+                                onRemoveTag = { viewModel.removeTag(it) }
+                            )
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun TagSheetContent(
+    assignedTags: List<com.foxsteven.luminagallery.data.model.TagEntity>,
+    availableTags: List<com.foxsteven.luminagallery.data.model.TagEntity>,
+    onAddTag: (Long) -> Unit,
+    onRemoveTag: (Long) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .navigationBarsPadding()
+    ) {
+        Text(
+            text = "Tags",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        if (assignedTags.isEmpty()) {
+            Text(
+                text = "No tags assigned.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                assignedTags.forEach { tag ->
+                    InputChip(
+                        selected = true,
+                        onClick = { onRemoveTag(tag.id) },
+                        label = { Text(tag.name) },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Remove Tag",
+                                modifier = Modifier.size(InputChipDefaults.IconSize)
+                            )
+                        }
+                    )
+                }
+            }
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+        Text(
+            text = "Available Tags",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        if (availableTags.isEmpty()) {
+            Text(
+                text = "No more tags available.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                availableTags.forEach { tag ->
+                    AssistChip(
+                        onClick = { onAddTag(tag.id) },
+                        label = { Text(tag.name) }
+                    )
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }

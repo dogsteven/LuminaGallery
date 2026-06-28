@@ -6,4 +6,7 @@ import kotlinx.serialization.Serializable
 object GalleryRoute
 
 @Serializable
+object TagsRoute
+
+@Serializable
 data class ImageDetailRoute(val imageId: Long)
