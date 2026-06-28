@@ -81,4 +81,12 @@ class ImageDetailViewModel @Inject constructor(
             tagService.removeTagFromImage(imageId, tagId)
         }
     }
+
+    fun deleteImage(onComplete: () -> Unit) {
+        val image = _image.value ?: return
+        viewModelScope.launch {
+            galleryService.deleteImage(image)
+            onComplete()
+        }
+    }
 }

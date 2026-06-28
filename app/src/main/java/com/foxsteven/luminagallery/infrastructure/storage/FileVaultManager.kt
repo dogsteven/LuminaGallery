@@ -19,7 +19,7 @@ class FileVaultManager @Inject constructor(
     private val thumbDir = File(context.filesDir, "thumbnails").apply { if (!exists()) mkdirs() }
 
     fun saveOriginal(uri: Uri): String {
-        val fileName = "${UUID.randomUUID()}.jpg" // Simple approach for now
+        val fileName = "${UUID.randomUUID()}.jpg"
         val destFile = File(vaultDir, fileName)
 
         context.contentResolver.openInputStream(uri)?.use { input ->
@@ -35,7 +35,7 @@ class FileVaultManager @Inject constructor(
         val originalFile = File(context.filesDir, originalRelativePath)
         if (!originalFile.exists()) throw IllegalArgumentException("Original file not found: $originalRelativePath")
 
-        val fileName = "thumb_${originalFile.name}"
+        val fileName = "thumb_${UUID.randomUUID()}.jpg"
         val destFile = File(thumbDir, fileName)
 
         val options = BitmapFactory.Options().apply {

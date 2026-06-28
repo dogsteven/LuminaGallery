@@ -34,12 +34,23 @@ A fully functional, single-module Android application featuring:
 | **Phase 4** | Full-screen Viewer & Zooming | ✅ Completed | Navigation, Detail Screen, and Telephoto zoom integration. |
 | **Phase 5** | Tagging System | ✅ Completed | Bottom Bar navigation, Tag management UI, and Image detail tagging. |
 | **Phase 6** | Advanced Filtering & Saved Criteria | ✅ Completed | Room-based filtering, saved criteria persistence, and Filter UI. |
-| **Phase 7** | Biometric Security & App Lock | ⏳ Pending | |
+| **Phase 7** | Biometric Security & App Lock | ✅ Completed | UI overlay lock, 2-min grace period, and Activity-scoped ViewModels. |
 | **Phase 8** | External Integration | ⏳ Pending | |
 
 ---
 
 ## Implementation Log
+
+### 2026-06-28: Phase 7 Completed
+- **Activity:** Implemented biometric/password security and architectural durability.
+- **Achievements:**
+    - Created `BiometricManager` (Infrastructure) to handle system auth prompts.
+    - Implemented `AuthenticationService` (Application) with a **2-minute grace period** for backgrounding.
+    - Developed a branded `AuthScreen` overlay in `MainActivity` with "Biometric" and "Password" options.
+    - **Refined Architecture:** Moved `GalleryViewModel` and `TagViewModel` to **Activity Scope** to ensure state durability across the entire session.
+    - **Robust Deletion:** Implemented full image deletion (physical files + database entries).
+    - Verified with 42 total unit tests passing.
+- **Next Steps:** Begin Phase 8 (External Integration).
 
 ### 2026-06-28: Phase 6 Completed
 - **Activity:** Implemented advanced filtering and saved criteria.

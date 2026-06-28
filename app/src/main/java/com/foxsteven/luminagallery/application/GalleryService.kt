@@ -92,4 +92,10 @@ class GalleryService @Inject constructor(
         
         imageDao.insertImage(imageEntity)
     }
+
+    suspend fun deleteImage(image: ImageEntity) {
+        fileVaultManager.deleteFile(image.originalPath)
+        fileVaultManager.deleteFile(image.thumbnailPath)
+        imageDao.deleteImage(image)
+    }
 }

@@ -97,6 +97,12 @@ class GalleryViewModel @Inject constructor(
             galleryService.applySavedCriteria(criteria)
         }
     }
+
+    fun onDeleteImage(image: ImageEntity) {
+        viewModelScope.launch {
+            galleryService.deleteImage(image)
+        }
+    }
 }
 
 sealed interface GalleryUiState {

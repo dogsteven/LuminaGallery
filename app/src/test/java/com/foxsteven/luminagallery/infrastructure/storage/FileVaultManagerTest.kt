@@ -45,7 +45,7 @@ class FileVaultManagerTest {
     }
 
     @Test
-    fun `generateThumbnail should create a smaller image`() {
+    fun `generateThumbnail should create a smaller image with unique name`() {
         // Arrange
         val tempFile = File(context.cacheDir, "test_image_2.jpg")
         FileOutputStream(tempFile).use { 
@@ -55,13 +55,18 @@ class FileVaultManagerTest {
         val originalRelativePath = fileVaultManager.saveOriginal(uri)
 
         // Act
-        val thumbRelativePath = fileVaultManager.generateThumbnail(originalRelativePath)
+        val thumbRelativePath1 = fileVaultManager.generateThumbnail(originalRelativePath)
+        val thumbRelativePath2 = fileVaultManager.generateThumbnail(originalRelativePath)
 
         // Assert
-        assertTrue(thumbRelativePath.startsWith("thumbnails/"))
-        val thumbFile = fileVaultManager.getAbsoluteFile(thumbRelativePath)
-        assertTrue(thumbFile.exists())
-        // In a real scenario we'd check dimensions, but Robolectric's Bitmap might be limited
+        assertTrue(thumbRelativePath1.startsWith("thumbnails/"))
+        assertTrue(thumbRelativePath2.startsWith("thumbnails/"))
+        assertTrue(thumbRelativePath1 != thumbRelativePath2)
+        
+        val thumbFile1 = fileVaultManager.getAbsoluteFile(thumbRelativePath1)
+        val thumbFile2 = fileVaultManager.getAbsoluteFile(thumbRelativePath2)
+        assertTrue(thumbFile1.exists())
+        assertTrue(thumbFile2.exists())
     }
 
     @Test

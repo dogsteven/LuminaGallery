@@ -15,3 +15,4 @@ Enable users to find images quickly using multiple criteria.
 ## Expected Output
 *   Dynamic filtering of the main grid.
 *   Users can save and reload their favorite searches.
+*   **Refinement:** Robust image deletion that cleans up both database entries and physical files.

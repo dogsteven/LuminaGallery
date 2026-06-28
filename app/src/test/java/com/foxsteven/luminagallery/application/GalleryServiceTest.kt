@@ -51,4 +51,26 @@ class GalleryServiceTest {
             it.description == description
         }) }
     }
+
+    @Test
+    fun `deleteImage should call vault manager to delete files and dao to delete entry`() = runTest {
+        // Arrange
+        val image = ImageEntity(
+            id = 1,
+            originalPath = "vault/1.jpg",
+            thumbnailPath = "thumbnails/thumb_1.jpg",
+            description = "Test",
+            timestamp = 1000L
+        )
+        every { fileVaultManager.deleteFile(any()) } returns Unit
+        coEvery { imageDao.deleteImage(any()) } returns Unit
+
+        // Act
+        galleryService.deleteImage(image)
+
+        // Assert
+        coVerify { fileVaultManager.deleteFile(image.originalPath) }
+        coVerify { fileVaultManager.deleteFile(image.thumbnailPath) }
+        coVerify { imageDao.deleteImage(image) }
+    }
 }
