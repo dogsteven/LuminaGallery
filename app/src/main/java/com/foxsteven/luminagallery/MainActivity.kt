@@ -2,28 +2,38 @@ package com.foxsteven.luminagallery
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.outlined.Photo
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -52,6 +62,7 @@ import com.foxsteven.luminagallery.presentation.tags.TagManagementScreen
 import com.foxsteven.luminagallery.presentation.tags.TagViewModel
 import com.foxsteven.luminagallery.ui.theme.LuminaGalleryTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
@@ -68,6 +79,12 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Privacy: Block screenshots and hide content in app switcher
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
 
         // Observe process lifecycle for app-wide backgrounding
         ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _, event ->
@@ -104,6 +121,8 @@ class MainActivity : FragmentActivity() {
                     val navController = rememberNavController()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
+                    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                    val scope = rememberCoroutineScope()
 
                     val topLevelDestinations = listOf(
                         TopLevelDestination(
@@ -120,78 +139,93 @@ class MainActivity : FragmentActivity() {
                         )
                     )
 
-                    // Show bottom bar only on top-level destinations
-                    val showBottomBar = !isPickerMode && topLevelDestinations.any { destination ->
+                    val isTopLevelDestination = topLevelDestinations.any { destination ->
                         currentDestination?.hasRoute(destination.route::class) == true
                     }
 
-                    Scaffold(
-                        topBar = {
-                            if (isPickerMode && currentDestination?.hasRoute(GalleryRoute::class) == true) {
-                                TopAppBar(
-                                    title = { Text("Select Photo") }
-                                )
-                            }
-                        },
-                        bottomBar = {
-                            if (showBottomBar) {
-                                NavigationBar {
-                                    topLevelDestinations.forEach { destination ->
-                                        val selected = currentDestination?.hierarchy?.any { 
-                                            it.hasRoute(destination.route::class) 
-                                        } == true
-                                        
-                                        NavigationBarItem(
-                                            selected = selected,
-                                            onClick = {
-                                                navController.navigate(destination.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
+                    ModalNavigationDrawer(
+                        drawerState = drawerState,
+                        gesturesEnabled = !isPickerMode && isTopLevelDestination,
+                        drawerContent = {
+                            ModalDrawerSheet {
+                                Spacer(Modifier.height(12.dp))
+                                topLevelDestinations.forEach { destination ->
+                                    val selected = currentDestination?.hierarchy?.any {
+                                        it.hasRoute(destination.route::class)
+                                    } == true
+                                    NavigationDrawerItem(
+                                        label = { Text(destination.name) },
+                                        selected = selected,
+                                        onClick = {
+                                            scope.launch { drawerState.close() }
+                                            navController.navigate(destination.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
                                                 }
-                                            },
-                                            icon = {
-                                                Icon(
-                                                    imageVector = if (selected) destination.selectedIcon else destination.unselectedIcon,
-                                                    contentDescription = destination.name
-                                                )
-                                            },
-                                            label = { Text(destination.name) }
-                                        )
-                                    }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        },
+                                        icon = {
+                                            Icon(
+                                                imageVector = if (selected) destination.selectedIcon else destination.unselectedIcon,
+                                                contentDescription = destination.name
+                                            )
+                                        },
+                                        modifier = Modifier.padding(horizontal = 12.dp)
+                                    )
                                 }
                             }
                         }
-                    ) { innerPadding ->
-                        NavHost(
-                            navController = navController,
-                            startDestination = GalleryRoute,
-                            modifier = Modifier.padding(innerPadding)
-                        ) {
-                            composable<GalleryRoute> {
-                                GalleryScreen(
-                                    viewModel = galleryViewModel,
-                                    onViewDetail = { source, identifier ->
-                                        navController.navigate(ImageDetailRoute(source, identifier))
-                                    },
-                                    onPickImage = { path ->
-                                        handleImageSelection(path)
-                                    }
-                                )
+                    ) {
+                        Scaffold(
+                            topBar = {
+                                if (isTopLevelDestination) {
+                                    val currentTitle = topLevelDestinations.find { destination ->
+                                        currentDestination?.hasRoute(destination.route::class) == true
+                                    }?.name ?: "LuminaGallery"
+
+                                    TopAppBar(
+                                        title = { Text(if (isPickerMode) "Select Photo" else currentTitle) },
+                                        navigationIcon = {
+                                            if (!isPickerMode) {
+                                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                                    Icon(Icons.Default.Menu, contentDescription = "Open Drawer")
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
                             }
-                            composable<TagsRoute> {
-                                TagManagementScreen(viewModel = tagViewModel)
-                            }
-                            composable<ImageDetailRoute> {
-                                val viewModel: ImageDetailViewModel = hiltViewModel()
-                                ImageDetailScreen(
-                                    viewModel = viewModel,
-                                    onBackClick = {
-                                        navController.popBackStack()
-                                    }
-                                )
+                        ) { innerPadding ->
+                            NavHost(
+                                navController = navController,
+                                startDestination = GalleryRoute,
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                composable<GalleryRoute> {
+                                    GalleryScreen(
+                                        viewModel = galleryViewModel,
+                                        onViewDetail = { source, identifier ->
+                                            navController.navigate(ImageDetailRoute(source, identifier))
+                                        },
+                                        onPickImage = { path ->
+                                            handleImageSelection(path)
+                                        }
+                                    )
+                                }
+                                composable<TagsRoute> {
+                                    TagManagementScreen(viewModel = tagViewModel)
+                                }
+                                composable<ImageDetailRoute> {
+                                    val viewModel: ImageDetailViewModel = hiltViewModel()
+                                    ImageDetailScreen(
+                                        viewModel = viewModel,
+                                        onBackClick = {
+                                            navController.popBackStack()
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
