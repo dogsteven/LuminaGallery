@@ -12,8 +12,6 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
@@ -22,6 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ImageDetailViewModelTest {
@@ -30,6 +29,8 @@ class ImageDetailViewModelTest {
     private lateinit var tagService: TagService
     private lateinit var savedStateHandle: SavedStateHandle
     private val testDispatcher = StandardTestDispatcher()
+    private val identifier = UUID.randomUUID()
+    private val source = "LOCAL"
 
     @Before
     fun setup() {
@@ -40,10 +41,10 @@ class ImageDetailViewModelTest {
         
         // Mock the toRoute extension function
         mockkStatic("androidx.navigation.SavedStateHandleKt")
-        every { savedStateHandle.toRoute<ImageDetailRoute>() } returns ImageDetailRoute(1L)
+        every { savedStateHandle.toRoute<ImageDetailRoute>() } returns ImageDetailRoute(source, identifier.toString())
         
         // Use flows that don't emit immediately to test Loading state
-        every { tagService.getTagsForImage(1L) } returns flowOf(emptyList())
+        every { tagService.getTagsForImage(source, identifier) } returns flowOf(emptyList())
         every { tagService.allTags } returns flowOf(emptyList())
     }
 
@@ -54,8 +55,8 @@ class ImageDetailViewModelTest {
 
     @Test
     fun `init should set state to Success when image is found`() = runTest {
-        val image = ImageEntity(id = 1L, originalPath = "p1", thumbnailPath = "t1", description = "", timestamp = 0)
-        coEvery { galleryService.getImage(1L) } returns image
+        val image = ImageEntity(source = source, identifier = identifier, originalPath = "p1", thumbnailPath = "t1", description = "", timestamp = 0)
+        coEvery { galleryService.getImage(source, identifier) } returns image
 
         val viewModel = ImageDetailViewModel(galleryService, tagService, savedStateHandle)
         
@@ -67,12 +68,12 @@ class ImageDetailViewModelTest {
 
         assertTrue(viewModel.uiState.value is ImageDetailUiState.Success)
         val state = viewModel.uiState.value as ImageDetailUiState.Success
-        assertTrue(state.image.id == 1L)
+        assertEquals(identifier, state.image.identifier)
     }
 
     @Test
     fun `init should set state to Error when image is not found`() = runTest {
-        coEvery { galleryService.getImage(1L) } returns null
+        coEvery { galleryService.getImage(source, identifier) } returns null
 
         val viewModel = ImageDetailViewModel(galleryService, tagService, savedStateHandle)
         

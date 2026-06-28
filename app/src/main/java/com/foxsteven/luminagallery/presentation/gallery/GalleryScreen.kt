@@ -23,7 +23,7 @@ import com.foxsteven.luminagallery.presentation.gallery.components.GalleryItem
 fun GalleryScreen(
     viewModel: GalleryViewModel,
     modifier: Modifier = Modifier,
-    onViewDetail: (Long) -> Unit,
+    onViewDetail: (String, String) -> Unit,
     onPickImage: ((String) -> Unit)? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -71,7 +71,7 @@ fun GalleryScreen(
                 ) {
                     items(
                         items = state.images,
-                        key = { it.id }
+                        key = { "${it.source}_${it.identifier}" }
                     ) { image ->
                         GalleryItem(
                             image = image,
@@ -79,7 +79,7 @@ fun GalleryScreen(
                                 if (isPickerMode) {
                                     onPickImage?.invoke(image.originalPath)
                                 } else {
-                                    onViewDetail(image.id)
+                                    onViewDetail(image.source, image.identifier.toString())
                                 }
                             },
                             modifier = Modifier.padding(4.dp)

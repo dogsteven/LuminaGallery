@@ -24,7 +24,8 @@ object PersistenceModule {
             context,
             LuminaDatabase::class.java,
             "lumina_gallery.db"
-        ).build()
+        ).fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
     }
 
     @Provides

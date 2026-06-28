@@ -1,12 +1,15 @@
 package com.foxsteven.luminagallery.data.model
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import java.util.UUID
 
-@Entity(tableName = "images")
+@Entity(
+    tableName = "images",
+    primaryKeys = ["source", "identifier"]
+)
 data class ImageEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val source: String,
+    val identifier: UUID,
     val originalPath: String,
     val thumbnailPath: String,
     val description: String,

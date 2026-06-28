@@ -10,6 +10,7 @@ import com.foxsteven.luminagallery.data.model.SavedCriteriaEntity
 import com.foxsteven.luminagallery.data.model.TagEntity
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.UUID
 
 @Database(
     entities = [
@@ -18,7 +19,7 @@ import kotlinx.serialization.json.Json
         ImageTagCrossRef::class,
         SavedCriteriaEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(LuminaTypeConverters::class)
@@ -30,12 +31,22 @@ abstract class LuminaDatabase : RoomDatabase() {
 
 class LuminaTypeConverters {
     @TypeConverter
-    fun fromList(list: List<Long>): String {
+    fun fromStringList(list: List<String>): String {
         return Json.encodeToString(list)
     }
 
     @TypeConverter
-    fun toList(json: String): List<Long> {
+    fun toStringList(json: String): List<String> {
         return Json.decodeFromString(json)
+    }
+
+    @TypeConverter
+    fun fromUUID(uuid: UUID): String {
+        return uuid.toString()
+    }
+
+    @TypeConverter
+    fun toUUID(uuidString: String): UUID {
+        return UUID.fromString(uuidString)
     }
 }

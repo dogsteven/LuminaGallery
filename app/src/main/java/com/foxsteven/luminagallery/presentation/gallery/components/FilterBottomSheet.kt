@@ -95,14 +95,14 @@ fun FilterBottomSheet(
             ) {
                 allTags.forEach { tag ->
                     FilterChip(
-                        selected = criteria.tagIds.contains(tag.id),
+                        selected = criteria.tagNames.contains(tag.name),
                         onClick = {
-                            val newTags = if (criteria.tagIds.contains(tag.id)) {
-                                criteria.tagIds - tag.id
+                            val newTags = if (criteria.tagNames.contains(tag.name)) {
+                                criteria.tagNames - tag.name
                             } else {
-                                criteria.tagIds + tag.id
+                                criteria.tagNames + tag.name
                             }
-                            onFilterUpdate(criteria.copy(tagIds = newTags))
+                            onFilterUpdate(criteria.copy(tagNames = newTags))
                         },
                         label = { Text(tag.name) }
                     )

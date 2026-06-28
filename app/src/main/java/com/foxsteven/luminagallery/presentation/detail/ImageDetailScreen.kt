@@ -140,8 +140,8 @@ fun ImageDetailScreen(
 fun TagSheetContent(
     assignedTags: List<com.foxsteven.luminagallery.data.model.TagEntity>,
     availableTags: List<com.foxsteven.luminagallery.data.model.TagEntity>,
-    onAddTag: (Long) -> Unit,
-    onRemoveTag: (Long) -> Unit,
+    onAddTag: (String) -> Unit,
+    onRemoveTag: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -169,7 +169,7 @@ fun TagSheetContent(
                 assignedTags.forEach { tag ->
                     InputChip(
                         selected = true,
-                        onClick = { onRemoveTag(tag.id) },
+                        onClick = { onRemoveTag(tag.name) },
                         label = { Text(tag.name) },
                         trailingIcon = {
                             Icon(
@@ -203,7 +203,7 @@ fun TagSheetContent(
             ) {
                 availableTags.forEach { tag ->
                     AssistChip(
-                        onClick = { onAddTag(tag.id) },
+                        onClick = { onAddTag(tag.name) },
                         label = { Text(tag.name) }
                     )
                 }

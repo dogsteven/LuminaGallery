@@ -5,11 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "saved_criteria")
 data class SavedCriteriaEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val code: String,
     val name: String,
     val query: String,
     val startDate: Long? = null,
     val endDate: Long? = null,
-    val tagIds: List<Long>
+    val tagNames: List<String>
 )

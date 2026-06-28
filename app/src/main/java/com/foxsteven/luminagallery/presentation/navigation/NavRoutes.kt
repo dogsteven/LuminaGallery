@@ -9,4 +9,7 @@ object GalleryRoute
 object TagsRoute
 
 @Serializable
-data class ImageDetailRoute(val imageId: Long)
+data class ImageDetailRoute(
+    val source: String,
+    val identifier: String
+)

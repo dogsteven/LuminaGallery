@@ -10,11 +10,11 @@ interface SavedCriteriaDao {
     fun getAllSavedCriteria(): Flow<List<SavedCriteriaEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSavedCriteria(criteria: SavedCriteriaEntity): Long
+    suspend fun insertSavedCriteria(criteria: SavedCriteriaEntity)
 
     @Delete
     suspend fun deleteSavedCriteria(criteria: SavedCriteriaEntity)
     
-    @Query("SELECT * FROM saved_criteria WHERE id = :id")
-    suspend fun getSavedCriteriaById(id: Long): SavedCriteriaEntity?
+    @Query("SELECT * FROM saved_criteria WHERE code = :code")
+    suspend fun getSavedCriteriaByCode(code: String): SavedCriteriaEntity?
 }

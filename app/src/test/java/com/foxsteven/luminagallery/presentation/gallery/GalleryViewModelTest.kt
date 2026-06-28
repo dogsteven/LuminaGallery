@@ -21,6 +21,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GalleryViewModelTest {
@@ -78,7 +79,7 @@ class GalleryViewModelTest {
     @Test
     fun `images from service should result in Success state`() = runTest {
         val images = listOf(
-            ImageEntity(id = 1, originalPath = "p1", thumbnailPath = "t1", description = "", timestamp = 0)
+            ImageEntity(source = "LOCAL", identifier = UUID.randomUUID(), originalPath = "p1", thumbnailPath = "t1", description = "", timestamp = 0)
         )
         imagesFlow.value = images
         testDispatcher.scheduler.advanceUntilIdle()

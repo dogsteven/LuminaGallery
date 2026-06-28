@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.datetime.Clock
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,8 +35,8 @@ class GalleryService @Inject constructor(
                 query = criteria.query?.takeIf { it.isNotBlank() },
                 startDate = criteria.startDate,
                 endDate = criteria.endDate,
-                tagIds = criteria.tagIds.toList(),
-                tagCount = criteria.tagIds.size
+                tagNames = criteria.tagNames.toList(),
+                tagCount = criteria.tagNames.size
             )
         }
     }
@@ -53,11 +54,12 @@ class GalleryService @Inject constructor(
     suspend fun saveCriteria(name: String) {
         val criteria = _filterCriteria.value
         val entity = SavedCriteriaEntity(
+            code = UUID.randomUUID().toString(),
             name = name,
             query = criteria.query ?: "",
             startDate = criteria.startDate,
             endDate = criteria.endDate,
-            tagIds = criteria.tagIds.toList()
+            tagNames = criteria.tagNames.toList()
         )
         savedCriteriaDao.insertSavedCriteria(entity)
     }
@@ -71,12 +73,12 @@ class GalleryService @Inject constructor(
             query = criteria.query.takeIf { it.isNotBlank() },
             startDate = criteria.startDate,
             endDate = criteria.endDate,
-            tagIds = criteria.tagIds.toSet()
+            tagNames = criteria.tagNames.toSet()
         )
     }
 
-    suspend fun getImage(id: Long): ImageEntity? {
-        return imageDao.getImageById(id)
+    suspend fun getImage(source: String, identifier: UUID): ImageEntity? {
+        return imageDao.getImageByIdentifier(source, identifier)
     }
 
     suspend fun importImage(uri: Uri, description: String) {
@@ -84,6 +86,8 @@ class GalleryService @Inject constructor(
         val thumbnailPath = fileVaultManager.generateThumbnail(originalPath)
         
         val imageEntity = ImageEntity(
+            source = "LOCAL",
+            identifier = UUID.randomUUID(),
             originalPath = originalPath,
             thumbnailPath = thumbnailPath,
             description = description,

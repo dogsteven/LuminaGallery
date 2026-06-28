@@ -20,6 +20,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
 class ImageDaoTest {
@@ -46,14 +47,17 @@ class ImageDaoTest {
     @Test
     @Throws(Exception::class)
     fun insertAndGetImage() = runBlocking {
+        val identifier = UUID.randomUUID()
         val image = ImageEntity(
+            source = "LOCAL",
+            identifier = identifier,
             originalPath = "path/to/original.jpg",
             thumbnailPath = "path/to/thumb.jpg",
             description = "Test Image",
             timestamp = System.currentTimeMillis()
         )
-        val id = imageDao.insertImage(image)
-        val retrieved = imageDao.getImageById(id)
+        imageDao.insertImage(image)
+        val retrieved = imageDao.getImageByIdentifier("LOCAL", identifier)
         assertNotNull(retrieved)
         assertEquals(image.description, retrieved?.description)
     }
@@ -62,12 +66,16 @@ class ImageDaoTest {
     @Throws(Exception::class)
     fun getAllImages() = runBlocking {
         val image1 = ImageEntity(
+            source = "LOCAL",
+            identifier = UUID.randomUUID(),
             originalPath = "path/1",
             thumbnailPath = "thumb/1",
             description = "Image 1",
             timestamp = 1000L
         )
         val image2 = ImageEntity(
+            source = "LOCAL",
+            identifier = UUID.randomUUID(),
             originalPath = "path/2",
             thumbnailPath = "thumb/2",
             description = "Image 2",
@@ -86,15 +94,18 @@ class ImageDaoTest {
     @Test
     @Throws(Exception::class)
     fun deleteImage() = runBlocking {
+        val identifier = UUID.randomUUID()
         val image = ImageEntity(
+            source = "LOCAL",
+            identifier = identifier,
             originalPath = "path",
             thumbnailPath = "thumb",
             description = "To Delete",
             timestamp = 0L
         )
-        val id = imageDao.insertImage(image)
-        imageDao.deleteImageById(id)
-        val retrieved = imageDao.getImageById(id)
+        imageDao.insertImage(image)
+        imageDao.deleteImageByIdentifier("LOCAL", identifier)
+        val retrieved = imageDao.getImageByIdentifier("LOCAL", identifier)
         assertNull(retrieved)
     }
 
@@ -121,27 +132,31 @@ class ImageDaoTest {
 
     @Test
     fun filterImagesByTags() = runBlocking {
-        val img1Id = imageDao.insertImage(createImage("Img 1", 1000L))
-        val img2Id = imageDao.insertImage(createImage("Img 2", 2000L))
+        val img1 = createImage("Img 1", 1000L)
+        val img2 = createImage("Img 2", 2000L)
+        imageDao.insertImage(img1)
+        imageDao.insertImage(img2)
         
-        val tag1Id = tagDao.insertTag(TagEntity(name = "Tag 1"))
-        val tag2Id = tagDao.insertTag(TagEntity(name = "Tag 2"))
+        tagDao.insertTag(TagEntity(name = "Tag 1"))
+        tagDao.insertTag(TagEntity(name = "Tag 2"))
         
-        tagDao.insertImageTagCrossRef(ImageTagCrossRef(img1Id, tag1Id))
-        tagDao.insertImageTagCrossRef(ImageTagCrossRef(img1Id, tag2Id))
-        tagDao.insertImageTagCrossRef(ImageTagCrossRef(img2Id, tag1Id))
+        tagDao.insertImageTagCrossRef(ImageTagCrossRef(img1.source, img1.identifier, "Tag 1"))
+        tagDao.insertImageTagCrossRef(ImageTagCrossRef(img1.source, img1.identifier, "Tag 2"))
+        tagDao.insertImageTagCrossRef(ImageTagCrossRef(img2.source, img2.identifier, "Tag 1"))
 
         // Should find Img 1 (has both Tag 1 and Tag 2)
-        val bothTags = imageDao.getFilteredImages(null, null, null, listOf(tag1Id, tag2Id), 2).first()
+        val bothTags = imageDao.getFilteredImages(null, null, null, listOf("Tag 1", "Tag 2"), 2).first()
         assertEquals(1, bothTags.size)
         assertEquals("Img 1", bothTags[0].description)
 
         // Should find both (both have Tag 1)
-        val oneTag = imageDao.getFilteredImages(null, null, null, listOf(tag1Id), 1).first()
+        val oneTag = imageDao.getFilteredImages(null, null, null, listOf("Tag 1"), 1).first()
         assertEquals(2, oneTag.size)
     }
 
     private fun createImage(description: String, timestamp: Long) = ImageEntity(
+        source = "LOCAL",
+        identifier = UUID.randomUUID(),
         originalPath = "path",
         thumbnailPath = "thumb",
         description = description,

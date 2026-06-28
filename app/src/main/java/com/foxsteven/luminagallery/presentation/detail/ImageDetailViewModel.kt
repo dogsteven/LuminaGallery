@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.UUID
 import javax.inject.Inject
 
 sealed interface ImageDetailUiState {
@@ -36,11 +37,12 @@ class ImageDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<ImageDetailRoute>()
-    private val imageId = route.imageId
+    private val source = route.source
+    private val identifier = UUID.fromString(route.identifier)
 
     private val _image = MutableStateFlow<ImageEntity?>(null)
     private val _isError = MutableStateFlow(value = false)
-    private val _assignedTags = tagService.getTagsForImage(imageId)
+    private val _assignedTags = tagService.getTagsForImage(source, identifier)
     private val _allTags = tagService.allTags
 
     val uiState: StateFlow<ImageDetailUiState> = combine(_image, _isError, _assignedTags, _allTags) { image, isError, assigned, all ->
@@ -49,7 +51,7 @@ class ImageDetailViewModel @Inject constructor(
             image != null -> ImageDetailUiState.Success(
                 image = image,
                 assignedTags = assigned,
-                availableTags = all.filter { tag -> assigned.none { it.id == tag.id } }
+                availableTags = all.filter { tag -> assigned.none { it.name == tag.name } }
             )
             else -> ImageDetailUiState.Loading
         }
@@ -65,7 +67,7 @@ class ImageDetailViewModel @Inject constructor(
 
     private fun loadImage() {
         viewModelScope.launch {
-            val image = galleryService.getImage(imageId)
+            val image = galleryService.getImage(source, identifier)
             if (image != null) {
                 _image.value = image
             } else {
@@ -74,15 +76,15 @@ class ImageDetailViewModel @Inject constructor(
         }
     }
 
-    fun addTag(tagId: Long) {
+    fun addTag(tagName: String) {
         viewModelScope.launch {
-            tagService.addTagToImage(imageId, tagId)
+            tagService.addTagToImage(source, identifier, tagName)
         }
     }
 
-    fun removeTag(tagId: Long) {
+    fun removeTag(tagName: String) {
         viewModelScope.launch {
-            tagService.removeTagFromImage(imageId, tagId)
+            tagService.removeTagFromImage(source, identifier, tagName)
         }
     }
 

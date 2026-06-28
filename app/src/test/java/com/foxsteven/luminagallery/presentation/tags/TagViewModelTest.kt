@@ -8,13 +8,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -48,7 +45,7 @@ class TagViewModelTest {
             viewModel.uiState.collect {} 
         }
         
-        tagsFlow.emit(listOf(TagEntity(id = 1, name = "Family")))
+        tagsFlow.emit(listOf(TagEntity(name = "Family")))
         runCurrent()
         
         assertTrue(viewModel.uiState.value is TagUiState.Success)
@@ -59,7 +56,7 @@ class TagViewModelTest {
     @Test
     fun `addTag should call service createTag`() = runTest {
         every { tagService.allTags } returns flowOf(emptyList())
-        coEvery { tagService.createTag("New") } returns 1L
+        coEvery { tagService.createTag("New") } returns Unit
 
         val viewModel = TagViewModel(tagService)
         viewModel.addTag("New")

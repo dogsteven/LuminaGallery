@@ -42,24 +42,25 @@ class SavedCriteriaDaoTest {
     @Throws(Exception::class)
     fun insertAndGetSavedCriteria() = runBlocking {
         val criteria = SavedCriteriaEntity(
+            code = "filter_1",
             name = "My Filter",
             query = "search",
             startDate = 100L,
             endDate = 200L,
-            tagIds = listOf(1L, 2L)
+            tagNames = listOf("Nature", "Family")
         )
-        val id = savedCriteriaDao.insertSavedCriteria(criteria)
-        val retrieved = savedCriteriaDao.getSavedCriteriaById(id)
+        savedCriteriaDao.insertSavedCriteria(criteria)
+        val retrieved = savedCriteriaDao.getSavedCriteriaByCode("filter_1")
         assertNotNull(retrieved)
         assertEquals(criteria.name, retrieved?.name)
-        assertEquals(criteria.tagIds, retrieved?.tagIds)
+        assertEquals(criteria.tagNames, retrieved?.tagNames)
     }
 
     @Test
     @Throws(Exception::class)
     fun getAllSavedCriteria() = runBlocking {
-        val criteria1 = SavedCriteriaEntity(name = "B Filter", query = "", tagIds = emptyList())
-        val criteria2 = SavedCriteriaEntity(name = "A Filter", query = "", tagIds = emptyList())
+        val criteria1 = SavedCriteriaEntity(code = "b", name = "B Filter", query = "", tagNames = emptyList())
+        val criteria2 = SavedCriteriaEntity(code = "a", name = "A Filter", query = "", tagNames = emptyList())
         
         savedCriteriaDao.insertSavedCriteria(criteria1)
         savedCriteriaDao.insertSavedCriteria(criteria2)
@@ -74,12 +75,12 @@ class SavedCriteriaDaoTest {
     @Test
     @Throws(Exception::class)
     fun deleteSavedCriteria() = runBlocking {
-        val criteria = SavedCriteriaEntity(name = "To Delete", query = "", tagIds = emptyList())
-        val id = savedCriteriaDao.insertSavedCriteria(criteria)
-        val entity = savedCriteriaDao.getSavedCriteriaById(id)!!
+        val criteria = SavedCriteriaEntity(code = "del", name = "To Delete", query = "", tagNames = emptyList())
+        savedCriteriaDao.insertSavedCriteria(criteria)
+        val entity = savedCriteriaDao.getSavedCriteriaByCode("del")!!
         
         savedCriteriaDao.deleteSavedCriteria(entity)
-        val retrieved = savedCriteriaDao.getSavedCriteriaById(id)
+        val retrieved = savedCriteriaDao.getSavedCriteriaByCode("del")
         assertNull(retrieved)
     }
 }

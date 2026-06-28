@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import java.util.UUID
 
 class TagServiceTest {
 
@@ -25,7 +26,7 @@ class TagServiceTest {
 
     @Test
     fun `allTags should return flow from dao`() = runTest {
-        val tags = listOf(TagEntity(id = 1, name = "Test"))
+        val tags = listOf(TagEntity(name = "Test"))
         every { tagDao.getAllTags() } returns flowOf(tags)
 
         tagService.allTags.collect {
@@ -35,14 +36,14 @@ class TagServiceTest {
 
     @Test
     fun `createTag should call dao insert`() = runTest {
-        coEvery { tagDao.insertTag(any()) } returns 1L
+        coEvery { tagDao.insertTag(any()) } returns Unit
         tagService.createTag("New Tag")
         coVerify { tagDao.insertTag(match { it.name == "New Tag" }) }
     }
 
     @Test
     fun `deleteTag should call dao delete`() = runTest {
-        val tag = TagEntity(id = 1, name = "Test")
+        val tag = TagEntity(name = "Test")
         coEvery { tagDao.deleteTag(tag) } returns Unit
         tagService.deleteTag(tag)
         coVerify { tagDao.deleteTag(tag) }
@@ -50,8 +51,11 @@ class TagServiceTest {
 
     @Test
     fun `addTagToImage should call dao insertCrossRef`() = runTest {
+        val identifier = UUID.randomUUID()
+        val source = "LOCAL"
+        val tagName = "TestTag"
         coEvery { tagDao.insertImageTagCrossRef(any()) } returns Unit
-        tagService.addTagToImage(1L, 2L)
-        coVerify { tagDao.insertImageTagCrossRef(ImageTagCrossRef(1L, 2L)) }
+        tagService.addTagToImage(source, identifier, tagName)
+        coVerify { tagDao.insertImageTagCrossRef(ImageTagCrossRef(source, identifier, tagName)) }
     }
 }

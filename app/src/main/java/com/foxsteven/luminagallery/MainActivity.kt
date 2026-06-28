@@ -173,8 +173,8 @@ class MainActivity : FragmentActivity() {
                             composable<GalleryRoute> {
                                 GalleryScreen(
                                     viewModel = galleryViewModel,
-                                    onViewDetail = { id ->
-                                        navController.navigate(ImageDetailRoute(id))
+                                    onViewDetail = { source, identifier ->
+                                        navController.navigate(ImageDetailRoute(source, identifier))
                                     },
                                     onPickImage = { path ->
                                         handleImageSelection(path)

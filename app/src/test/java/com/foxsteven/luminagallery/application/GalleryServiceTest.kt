@@ -12,6 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import java.util.UUID
 
 class GalleryServiceTest {
 
@@ -37,7 +38,7 @@ class GalleryServiceTest {
 
         every { fileVaultManager.saveOriginal(uri) } returns originalPath
         every { fileVaultManager.generateThumbnail(originalPath) } returns thumbPath
-        coEvery { imageDao.insertImage(any()) } returns 1L
+        coEvery { imageDao.insertImage(any()) } returns Unit
 
         // Act
         galleryService.importImage(uri, description)
@@ -46,6 +47,7 @@ class GalleryServiceTest {
         coVerify { fileVaultManager.saveOriginal(uri) }
         coVerify { fileVaultManager.generateThumbnail(originalPath) }
         coVerify { imageDao.insertImage(match { 
+            it.source == "LOCAL" &&
             it.originalPath == originalPath && 
             it.thumbnailPath == thumbPath &&
             it.description == description
@@ -56,7 +58,8 @@ class GalleryServiceTest {
     fun `deleteImage should call vault manager to delete files and dao to delete entry`() = runTest {
         // Arrange
         val image = ImageEntity(
-            id = 1,
+            source = "LOCAL",
+            identifier = UUID.randomUUID(),
             originalPath = "vault/1.jpg",
             thumbnailPath = "thumbnails/thumb_1.jpg",
             description = "Test",

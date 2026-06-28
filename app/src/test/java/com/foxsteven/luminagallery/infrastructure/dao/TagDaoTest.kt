@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
 class TagDaoTest {
@@ -60,19 +61,21 @@ class TagDaoTest {
     @Throws(Exception::class)
     fun tagImageAndRetrieve() = runBlocking {
         val image = ImageEntity(
+            source = "LOCAL",
+            identifier = UUID.randomUUID(),
             originalPath = "path",
             thumbnailPath = "thumb",
             description = "Nature Photo",
             timestamp = 0L
         )
-        val imageId = imageDao.insertImage(image)
+        imageDao.insertImage(image)
 
         val tag = TagEntity(name = "Nature")
-        val tagId = tagDao.insertTag(tag)
+        tagDao.insertTag(tag)
 
-        tagDao.insertImageTagCrossRef(ImageTagCrossRef(imageId, tagId))
+        tagDao.insertImageTagCrossRef(ImageTagCrossRef(image.source, image.identifier, tag.name))
 
-        val tagsForImage = tagDao.getTagsForImage(imageId).first()
+        val tagsForImage = tagDao.getTagsForImage(image.source, image.identifier).first()
         assertEquals(1, tagsForImage.size)
         assertEquals("Nature", tagsForImage[0].name)
     }
@@ -81,23 +84,24 @@ class TagDaoTest {
     @Throws(Exception::class)
     fun deleteTagCleansUpCrossRef() = runBlocking {
         val image = ImageEntity(
+            source = "LOCAL",
+            identifier = UUID.randomUUID(),
             originalPath = "path",
             thumbnailPath = "thumb",
             description = "Nature Photo",
             timestamp = 0L
         )
-        val imageId = imageDao.insertImage(image)
+        imageDao.insertImage(image)
 
         val tag = TagEntity(name = "Nature")
-        val tagId = tagDao.insertTag(tag)
-        val tagObj = TagEntity(id = tagId, name = "Nature")
+        tagDao.insertTag(tag)
 
-        tagDao.insertImageTagCrossRef(ImageTagCrossRef(imageId, tagId))
+        tagDao.insertImageTagCrossRef(ImageTagCrossRef(image.source, image.identifier, tag.name))
 
         // Delete the tag
-        tagDao.deleteTag(tagObj)
+        tagDao.deleteTag(tag)
 
-        val tagsForImage = tagDao.getTagsForImage(imageId).first()
+        val tagsForImage = tagDao.getTagsForImage(image.source, image.identifier).first()
         assertTrue(tagsForImage.isEmpty())
     }
 
@@ -105,23 +109,24 @@ class TagDaoTest {
     @Throws(Exception::class)
     fun deleteImageCleansUpCrossRef() = runBlocking {
         val image = ImageEntity(
+            source = "LOCAL",
+            identifier = UUID.randomUUID(),
             originalPath = "path",
             thumbnailPath = "thumb",
             description = "Nature Photo",
             timestamp = 0L
         )
-        val imageId = imageDao.insertImage(image)
-        val imageObj = image.copy(id = imageId)
+        imageDao.insertImage(image)
 
         val tag = TagEntity(name = "Nature")
-        val tagId = tagDao.insertTag(tag)
+        tagDao.insertTag(tag)
 
-        tagDao.insertImageTagCrossRef(ImageTagCrossRef(imageId, tagId))
+        tagDao.insertImageTagCrossRef(ImageTagCrossRef(image.source, image.identifier, tag.name))
 
         // Delete the image
-        imageDao.deleteImage(imageObj)
+        imageDao.deleteImage(image)
 
-        val tagsForImage = tagDao.getTagsForImage(imageId).first()
+        val tagsForImage = tagDao.getTagsForImage(image.source, image.identifier).first()
         assertTrue(tagsForImage.isEmpty())
     }
 }
