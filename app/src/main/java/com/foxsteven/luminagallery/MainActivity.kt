@@ -3,12 +3,11 @@ package com.foxsteven.luminagallery
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Label
+import androidx.compose.material.icons.automirrored.filled.Label
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.Photo
-import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -40,7 +39,6 @@ import com.foxsteven.luminagallery.presentation.tags.TagManagementScreen
 import com.foxsteven.luminagallery.presentation.tags.TagViewModel
 import com.foxsteven.luminagallery.ui.theme.LuminaGalleryTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -55,7 +53,6 @@ class MainActivity : FragmentActivity() {
         setContent {
             LuminaGalleryTheme {
                 val navController = rememberNavController()
-                val scope = rememberCoroutineScope()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
@@ -69,8 +66,8 @@ class MainActivity : FragmentActivity() {
                     TopLevelDestination(
                         name = "Tags",
                         route = TagsRoute,
-                        selectedIcon = Icons.Filled.Label,
-                        unselectedIcon = Icons.Outlined.Label
+                        selectedIcon = Icons.AutoMirrored.Filled.Label,
+                        unselectedIcon = Icons.AutoMirrored.Outlined.Label
                     )
                 )
 
@@ -123,11 +120,6 @@ class MainActivity : FragmentActivity() {
                                 viewModel = viewModel,
                                 onImageClick = { id ->
                                     navController.navigate(ImageDetailRoute(id))
-                                },
-                                onImportRequest = { uri ->
-                                    scope.launch {
-                                        galleryService.importImage(uri)
-                                    }
                                 }
                             )
                         }

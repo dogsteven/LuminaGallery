@@ -16,10 +16,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun TagManagementScreen(
     viewModel: TagViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showAddDialog by remember { mutableStateOf(false) }
+    var showAddDialog by remember { mutableStateOf(value = false) }
 
     Box(modifier = modifier.fillMaxSize()) {
         when (val state = uiState) {
@@ -41,7 +41,7 @@ fun TagManagementScreen(
                         items(state.tags) { tag ->
                             TagItem(
                                 tag = tag,
-                                onDeleteClick = { viewModel.deleteTag(tag) }
+                                onDeleteClick = { viewModel.deleteTag(tag) },
                             )
                         }
                     }
@@ -73,7 +73,7 @@ fun TagManagementScreen(
 @Composable
 fun TagItem(
     tag: com.foxsteven.luminagallery.data.model.TagEntity,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth()

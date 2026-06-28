@@ -19,14 +19,14 @@ class GalleryService @Inject constructor(
         return imageDao.getImageById(id)
     }
 
-    suspend fun importImage(uri: Uri) {
+    suspend fun importImage(uri: Uri, description: String) {
         val originalPath = fileVaultManager.saveOriginal(uri)
         val thumbnailPath = fileVaultManager.generateThumbnail(originalPath)
         
         val imageEntity = ImageEntity(
             originalPath = originalPath,
             thumbnailPath = thumbnailPath,
-            description = "", // TODO: Allow user to add description
+            description = description,
             timestamp = Clock.System.now().toEpochMilliseconds()
         )
         

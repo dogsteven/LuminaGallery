@@ -25,9 +25,10 @@ class GalleryServiceTest {
     }
 
     @Test
-    fun `importImage should call vault manager and dao`() = runTest {
+    fun `importImage should call vault manager and dao with description`() = runTest {
         // Arrange
         val uri = mockk<Uri>()
+        val description = "Test description"
         val originalPath = "vault/image.jpg"
         val thumbPath = "thumbnails/thumb_image.jpg"
 
@@ -36,13 +37,15 @@ class GalleryServiceTest {
         coEvery { imageDao.insertImage(any()) } returns 1L
 
         // Act
-        galleryService.importImage(uri)
+        galleryService.importImage(uri, description)
 
         // Assert
         coVerify { fileVaultManager.saveOriginal(uri) }
         coVerify { fileVaultManager.generateThumbnail(originalPath) }
         coVerify { imageDao.insertImage(match { 
-            it.originalPath == originalPath && it.thumbnailPath == thumbPath
+            it.originalPath == originalPath && 
+            it.thumbnailPath == thumbPath &&
+            it.description == description
         }) }
     }
 }

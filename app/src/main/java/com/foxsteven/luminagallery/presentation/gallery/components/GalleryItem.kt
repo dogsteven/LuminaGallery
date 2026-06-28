@@ -15,7 +15,7 @@ import java.io.File
 fun GalleryItem(
     image: ImageEntity,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val thumbnailFile = File(context.filesDir, image.thumbnailPath)

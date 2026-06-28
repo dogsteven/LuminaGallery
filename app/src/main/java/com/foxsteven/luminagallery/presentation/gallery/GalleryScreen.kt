@@ -3,21 +3,14 @@ package com.foxsteven.luminagallery.presentation.gallery
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,15 +21,15 @@ import com.foxsteven.luminagallery.presentation.gallery.components.GalleryItem
 fun GalleryScreen(
     viewModel: GalleryViewModel,
     onImageClick: (Long) -> Unit,
-    onImportRequest: (android.net.Uri) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val pendingImportUri by viewModel.pendingImportUri.collectAsStateWithLifecycle()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
-        uri?.let { onImportRequest(it) }
+        uri?.let { viewModel.onImagePicked(it) }
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -81,4 +74,44 @@ fun GalleryScreen(
             Icon(Icons.Default.Add, contentDescription = "Import Image")
         }
     }
+
+    pendingImportUri?.let { _ ->
+        ImportDescriptionDialog(
+            onDismiss = { viewModel.onImportCancel() },
+            onConfirm = { description ->
+                viewModel.onImportConfirm(description)
+            }
+        )
+    }
+}
+
+@Composable
+fun ImportDescriptionDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
+    var description by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Add Description") },
+        text = {
+            TextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Description (Optional)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(description) }) {
+                Text("Import")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

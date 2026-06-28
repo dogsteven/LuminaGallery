@@ -42,6 +42,15 @@ A fully functional, single-module Android application featuring:
 
 ## Implementation Log
 
+### 2026-06-28: Image Import Refinement & Architecture Cleanup
+- **Activity:** Implemented description prompt and refactored import logic to ViewModel.
+- **Achievements:**
+    - Added a description prompt dialog to the image import flow.
+    - Refactored `GalleryScreen` and `MainActivity` to move business logic into `GalleryViewModel` using Unidirectional Data Flow (UDF).
+    - Resolved deprecated icon usages and fixed general lint/code style issues across the project.
+    - Updated unit test suites for `GalleryService` and `GalleryViewModel` (25 total tests passing).
+- **Next Steps:** Begin Phase 6 (Advanced Filtering & Saved Criteria).
+
 ### 2026-06-28: Phase 5 Completed
 - **Activity:** Implemented tagging system and Bottom Navigation.
 - **Achievements:**

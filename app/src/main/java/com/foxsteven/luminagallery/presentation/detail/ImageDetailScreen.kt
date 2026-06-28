@@ -2,11 +2,8 @@ package com.foxsteven.luminagallery.presentation.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
@@ -27,10 +24,10 @@ import java.io.File
 fun ImageDetailScreen(
     viewModel: ImageDetailViewModel,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showTagSheet by remember { mutableStateOf(false) }
+    var showTagSheet by remember { mutableStateOf(value = false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -94,7 +91,7 @@ fun ImageDetailScreen(
                                 assignedTags = state.assignedTags,
                                 availableTags = state.availableTags,
                                 onAddTag = { viewModel.addTag(it) },
-                                onRemoveTag = { viewModel.removeTag(it) }
+                                onRemoveTag = viewModel::removeTag
                             )
                         }
                     }
@@ -110,7 +107,7 @@ fun TagSheetContent(
     assignedTags: List<com.foxsteven.luminagallery.data.model.TagEntity>,
     availableTags: List<com.foxsteven.luminagallery.data.model.TagEntity>,
     onAddTag: (Long) -> Unit,
-    onRemoveTag: (Long) -> Unit
+    onRemoveTag: (Long) -> Unit,
 ) {
     Column(
         modifier = Modifier
