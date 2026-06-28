@@ -40,6 +40,10 @@ LuminaGallery is a private, personal image gallery application designed for secu
 - **Minimum SDK:** 30 (Android 11)
 - **Target SDK:** 36 (Android 15+)
 
+## Operating Rules
+
+- **Git Management:** Without being explicitly requested, you are strictly forbidden from manipulating git (e.g., commit, stage, reset, etc.).
+
 ## Development Context for AI Agents
 
 - The application is a single-module project (`:app`).

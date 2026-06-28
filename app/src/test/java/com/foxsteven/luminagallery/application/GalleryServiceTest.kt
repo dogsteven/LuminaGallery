@@ -20,6 +20,7 @@ class GalleryServiceTest {
 
     @Before
     fun setup() {
+        every { imageDao.getAllImages() } returns mockk()
         galleryService = GalleryService(fileVaultManager, imageDao)
     }
 
