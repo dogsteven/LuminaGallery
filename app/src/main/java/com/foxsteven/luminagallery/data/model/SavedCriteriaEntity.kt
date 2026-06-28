@@ -9,7 +9,7 @@ data class SavedCriteriaEntity(
     val id: Long = 0,
     val name: String,
     val query: String,
-    val startDate: Long?,
-    val endDate: Long?,
+    val startDate: Long? = null,
+    val endDate: Long? = null,
     val tagIds: List<Long>
 )

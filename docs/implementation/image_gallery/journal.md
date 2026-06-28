@@ -18,8 +18,8 @@ A fully functional, single-module Android application featuring:
 ---
 
 ## Project Status Summary
-- **Current Phase:** Phase 6: Advanced Filtering & Saved Criteria
-- **Overall Progress:** 62.5%
+- **Current Phase:** Phase 7: Biometric Security & App Lock
+- **Overall Progress:** 75%
 - **Last Updated:** 2026-06-28
 
 ---
@@ -33,14 +33,23 @@ A fully functional, single-module Android application featuring:
 | **Phase 3** | Basic Gallery Grid & Thumbnail Loading | ✅ Completed | Scrollable grid with thumbnails loaded via Coil. |
 | **Phase 4** | Full-screen Viewer & Zooming | ✅ Completed | Navigation, Detail Screen, and Telephoto zoom integration. |
 | **Phase 5** | Tagging System | ✅ Completed | Bottom Bar navigation, Tag management UI, and Image detail tagging. |
-| **Phase 6** | Advanced Filtering & Saved Criteria | ⏳ Pending | |
-| **Phase 6** | Advanced Filtering & Saved Criteria | ⏳ Pending | |
+| **Phase 6** | Advanced Filtering & Saved Criteria | ✅ Completed | Room-based filtering, saved criteria persistence, and Filter UI. |
 | **Phase 7** | Biometric Security & App Lock | ⏳ Pending | |
 | **Phase 8** | External Integration | ⏳ Pending | |
 
 ---
 
 ## Implementation Log
+
+### 2026-06-28: Phase 6 Completed
+- **Activity:** Implemented advanced filtering and saved criteria.
+- **Achievements:**
+    - Implemented `SavedCriteriaDao` and complex SQL filtering in `ImageDao`.
+    - Updated `GalleryService` and `GalleryViewModel` for reactive filtering.
+    - Created `FilterBottomSheet` with text, date, and tag-based filtering.
+    - Added persistence and UI for saving/applying search criteria.
+    - Verified with 32 total unit tests passing.
+- **Next Steps:** Begin Phase 7 (Biometric Security & App Lock).
 
 ### 2026-06-28: Image Import Refinement & Architecture Cleanup
 - **Activity:** Implemented description prompt and refactored import logic to ViewModel.

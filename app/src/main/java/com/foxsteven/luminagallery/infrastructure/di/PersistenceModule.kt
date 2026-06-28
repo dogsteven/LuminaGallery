@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.foxsteven.luminagallery.infrastructure.persistence.ImageDao
 import com.foxsteven.luminagallery.infrastructure.persistence.LuminaDatabase
+import com.foxsteven.luminagallery.infrastructure.persistence.SavedCriteriaDao
 import com.foxsteven.luminagallery.infrastructure.persistence.TagDao
 import dagger.Module
 import dagger.Provides
@@ -34,5 +35,10 @@ object PersistenceModule {
     @Provides
     fun provideTagDao(database: LuminaDatabase): TagDao {
         return database.tagDao()
+    }
+
+    @Provides
+    fun provideSavedCriteriaDao(database: LuminaDatabase): SavedCriteriaDao {
+        return database.savedCriteriaDao()
     }
 }

@@ -2,6 +2,8 @@ package com.foxsteven.luminagallery.presentation.gallery
 
 import android.net.Uri
 import com.foxsteven.luminagallery.application.GalleryService
+import com.foxsteven.luminagallery.application.TagService
+import com.foxsteven.luminagallery.data.model.FilterCriteria
 import com.foxsteven.luminagallery.data.model.ImageEntity
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -25,27 +27,42 @@ class GalleryViewModelTest {
 
     private lateinit var viewModel: GalleryViewModel
     private val galleryService = mockk<GalleryService>()
+    private val tagService = mockk<TagService>()
     private val imagesFlow = MutableStateFlow<List<ImageEntity>>(emptyList())
+    private val filterFlow = MutableStateFlow(FilterCriteria())
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { galleryService.allImages } returns imagesFlow
-        viewModel = GalleryViewModel(galleryService)
+        every { galleryService.filterCriteria } returns filterFlow
+        every { galleryService.savedCriteria } returns MutableStateFlow(emptyList())
+        every { tagService.allTags } returns MutableStateFlow(emptyList())
+        viewModel = GalleryViewModel(galleryService, tagService)
     }
 
     @Test
     fun `initial state should be Empty`() = runTest {
+        advanceUntilIdle()
         assertEquals(GalleryUiState.Empty, viewModel.uiState.value)
         assertNull(viewModel.pendingImportUri.value)
     }
 
     @Test
-    fun `empty list from service should result in Empty state`() = runTest {
+    fun `empty list with active filter should result in NoResults state`() = runTest {
         imagesFlow.value = emptyList()
-        testDispatcher.scheduler.advanceUntilIdle()
-        assertEquals(GalleryUiState.Empty, viewModel.uiState.value)
+        filterFlow.value = FilterCriteria(query = "something")
+        advanceUntilIdle()
+        assertEquals(GalleryUiState.NoResults, viewModel.uiState.value)
+    }
+
+    @Test
+    fun `onFilterClear should call service clearFilter`() = runTest {
+        coEvery { galleryService.clearFilter() } returns Unit
+        viewModel.onFilterClear()
+        advanceUntilIdle()
+        coVerify { galleryService.clearFilter() }
     }
 
     @Test

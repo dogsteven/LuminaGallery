@@ -25,6 +25,7 @@ import kotlinx.serialization.json.Json
 abstract class LuminaDatabase : RoomDatabase() {
     abstract fun imageDao(): ImageDao
     abstract fun tagDao(): TagDao
+    abstract fun savedCriteriaDao(): SavedCriteriaDao
 }
 
 class LuminaTypeConverters {

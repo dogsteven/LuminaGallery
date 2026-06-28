@@ -9,12 +9,14 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.foxsteven.luminagallery.presentation.gallery.components.FilterBottomSheet
 import com.foxsteven.luminagallery.presentation.gallery.components.GalleryItem
 
 @Composable
@@ -25,6 +27,11 @@ fun GalleryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pendingImportUri by viewModel.pendingImportUri.collectAsStateWithLifecycle()
+    val filterCriteria by viewModel.filterCriteria.collectAsStateWithLifecycle()
+    val allTags by viewModel.allTags.collectAsStateWithLifecycle()
+    val savedCriteria by viewModel.savedCriteria.collectAsStateWithLifecycle()
+
+    var showFilterSheet by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -42,6 +49,17 @@ fun GalleryScreen(
                     text = "No images found. Import some!",
                     modifier = Modifier.align(Alignment.Center)
                 )
+            }
+            GalleryUiState.NoResults -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "No images match your filters.")
+                    TextButton(onClick = { viewModel.onFilterClear() }) {
+                        Text("Clear Filters")
+                    }
+                }
             }
             is GalleryUiState.Success -> {
                 LazyVerticalGrid(
@@ -63,16 +81,42 @@ fun GalleryScreen(
             }
         }
 
-        FloatingActionButton(
-            onClick = {
-                launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            },
+        Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.End
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Import Image")
+            FloatingActionButton(
+                onClick = { showFilterSheet = true },
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ) {
+                Icon(Icons.Default.FilterList, contentDescription = "Filter")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            FloatingActionButton(
+                onClick = {
+                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Import Image")
+            }
         }
+    }
+
+    if (showFilterSheet) {
+        FilterBottomSheet(
+            criteria = filterCriteria,
+            allTags = allTags,
+            savedCriteria = savedCriteria,
+            onFilterUpdate = { viewModel.onFilterUpdate(it) },
+            onFilterClear = { viewModel.onFilterClear() },
+            onSaveCriteria = { viewModel.onSaveCriteria(it) },
+            onDeleteSavedCriteria = { viewModel.onDeleteSavedCriteria(it) },
+            onApplySavedCriteria = { viewModel.onApplySavedCriteria(it) },
+            onDismissRequest = { showFilterSheet = false }
+        )
     }
 
     pendingImportUri?.let { _ ->

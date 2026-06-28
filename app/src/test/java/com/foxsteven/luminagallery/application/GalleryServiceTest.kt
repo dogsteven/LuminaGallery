@@ -3,6 +3,7 @@ package com.foxsteven.luminagallery.application
 import android.net.Uri
 import com.foxsteven.luminagallery.data.model.ImageEntity
 import com.foxsteven.luminagallery.infrastructure.persistence.ImageDao
+import com.foxsteven.luminagallery.infrastructure.persistence.SavedCriteriaDao
 import com.foxsteven.luminagallery.infrastructure.storage.FileVaultManager
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -17,11 +18,13 @@ class GalleryServiceTest {
     private lateinit var galleryService: GalleryService
     private val fileVaultManager = mockk<FileVaultManager>()
     private val imageDao = mockk<ImageDao>()
+    private val savedCriteriaDao = mockk<SavedCriteriaDao>()
 
     @Before
     fun setup() {
         every { imageDao.getAllImages() } returns mockk()
-        galleryService = GalleryService(fileVaultManager, imageDao)
+        every { savedCriteriaDao.getAllSavedCriteria() } returns mockk()
+        galleryService = GalleryService(fileVaultManager, imageDao, savedCriteriaDao)
     }
 
     @Test
