@@ -22,10 +22,12 @@ import com.foxsteven.luminagallery.presentation.gallery.components.GalleryItem
 @Composable
 fun GalleryScreen(
     viewModel: GalleryViewModel,
-    onImageClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    onViewDetail: (Long) -> Unit,
+    onPickImage: ((String) -> Unit)? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isPickerMode by viewModel.isPickerMode.collectAsStateWithLifecycle()
     val pendingImportUri by viewModel.pendingImportUri.collectAsStateWithLifecycle()
     val filterCriteria by viewModel.filterCriteria.collectAsStateWithLifecycle()
     val allTags by viewModel.allTags.collectAsStateWithLifecycle()
@@ -73,7 +75,13 @@ fun GalleryScreen(
                     ) { image ->
                         GalleryItem(
                             image = image,
-                            onClick = { onImageClick(image.id) },
+                            onClick = {
+                                if (isPickerMode) {
+                                    onPickImage?.invoke(image.originalPath)
+                                } else {
+                                    onViewDetail(image.id)
+                                }
+                            },
                             modifier = Modifier.padding(4.dp)
                         )
                     }
@@ -81,26 +89,28 @@ fun GalleryScreen(
             }
         }
 
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.End
-        ) {
-            FloatingActionButton(
-                onClick = { showFilterSheet = true },
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        if (!isPickerMode) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.End
             ) {
-                Icon(Icons.Default.FilterList, contentDescription = "Filter")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            FloatingActionButton(
-                onClick = {
-                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                FloatingActionButton(
+                    onClick = { showFilterSheet = true },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ) {
+                    Icon(Icons.Default.FilterList, contentDescription = "Filter")
                 }
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Import Image")
+                Spacer(modifier = Modifier.height(16.dp))
+                FloatingActionButton(
+                    onClick = {
+                        launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Import Image")
+                }
             }
         }
     }

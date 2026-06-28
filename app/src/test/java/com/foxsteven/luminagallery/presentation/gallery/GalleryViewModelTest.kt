@@ -47,6 +47,16 @@ class GalleryViewModelTest {
         advanceUntilIdle()
         assertEquals(GalleryUiState.Empty, viewModel.uiState.value)
         assertNull(viewModel.pendingImportUri.value)
+        assertEquals(false, viewModel.isPickerMode.value)
+    }
+
+    @Test
+    fun `setPickerMode should update isPickerMode state`() = runTest {
+        viewModel.setPickerMode(true)
+        assertEquals(true, viewModel.isPickerMode.value)
+        
+        viewModel.setPickerMode(false)
+        assertEquals(false, viewModel.isPickerMode.value)
     }
 
     @Test

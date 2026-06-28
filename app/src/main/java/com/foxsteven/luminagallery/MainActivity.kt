@@ -1,5 +1,6 @@
 package com.foxsteven.luminagallery
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,15 +12,19 @@ import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.outlined.Photo
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -47,6 +52,7 @@ import com.foxsteven.luminagallery.presentation.tags.TagManagementScreen
 import com.foxsteven.luminagallery.presentation.tags.TagViewModel
 import com.foxsteven.luminagallery.ui.theme.LuminaGalleryTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -58,6 +64,7 @@ class MainActivity : FragmentActivity() {
     @Inject
     lateinit var authenticationService: AuthenticationService
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -84,6 +91,15 @@ class MainActivity : FragmentActivity() {
                 val tagViewModel: TagViewModel = hiltViewModel()
                 val securityViewModel: SecurityViewModel = hiltViewModel()
 
+                val isPickerMode by galleryViewModel.isPickerMode.collectAsState()
+
+                LaunchedEffect(intent) {
+                    val action = intent?.action
+                    if ((action == Intent.ACTION_GET_CONTENT) || (action == Intent.ACTION_PICK)) {
+                        galleryViewModel.setPickerMode(enabled = true)
+                    }
+                }
+
                 Box(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -105,11 +121,18 @@ class MainActivity : FragmentActivity() {
                     )
 
                     // Show bottom bar only on top-level destinations
-                    val showBottomBar = topLevelDestinations.any { destination ->
+                    val showBottomBar = !isPickerMode && topLevelDestinations.any { destination ->
                         currentDestination?.hasRoute(destination.route::class) == true
                     }
 
                     Scaffold(
+                        topBar = {
+                            if (isPickerMode && currentDestination?.hasRoute(GalleryRoute::class) == true) {
+                                TopAppBar(
+                                    title = { Text("Select Photo") }
+                                )
+                            }
+                        },
                         bottomBar = {
                             if (showBottomBar) {
                                 NavigationBar {
@@ -150,8 +173,11 @@ class MainActivity : FragmentActivity() {
                             composable<GalleryRoute> {
                                 GalleryScreen(
                                     viewModel = galleryViewModel,
-                                    onImageClick = { id ->
+                                    onViewDetail = { id ->
                                         navController.navigate(ImageDetailRoute(id))
+                                    },
+                                    onPickImage = { path ->
+                                        handleImageSelection(path)
                                     }
                                 )
                             }
@@ -177,6 +203,22 @@ class MainActivity : FragmentActivity() {
                 }
             }
         }
+    }
+
+    private fun handleImageSelection(originalPath: String) {
+        val file = File(filesDir, originalPath)
+        val uri = FileProvider.getUriForFile(
+            this,
+            "$packageName.fileprovider",
+            file
+        )
+        
+        val resultIntent = Intent().apply {
+            data = uri
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        setResult(RESULT_OK, resultIntent)
+        finish()
     }
 }
 

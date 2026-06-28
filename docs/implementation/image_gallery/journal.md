@@ -35,11 +35,22 @@ A fully functional, single-module Android application featuring:
 | **Phase 5** | Tagging System | ✅ Completed | Bottom Bar navigation, Tag management UI, and Image detail tagging. |
 | **Phase 6** | Advanced Filtering & Saved Criteria | ✅ Completed | Room-based filtering, saved criteria persistence, and Filter UI. |
 | **Phase 7** | Biometric Security & App Lock | ✅ Completed | UI overlay lock, 2-min grace period, and Activity-scoped ViewModels. |
-| **Phase 8** | External Integration | ⏳ Pending | |
+| **Phase 8** | External Integration | ✅ Completed | Inbound picking, outbound sharing, and FileProvider setup. |
 
 ---
 
 ## Implementation Log
+
+### 2026-06-28: Phase 8 Completed
+- **Activity:** Implemented external integration for inbound and outbound sharing.
+- **Achievements:**
+    - Configured `FileProvider` with `file_paths.xml` for secure URI generation.
+    - Added intent filters for `ACTION_GET_CONTENT` and `ACTION_PICK` to `MainActivity`.
+    - Implemented "Picker Mode" in `GalleryViewModel` and `GalleryScreen` for selective image picking by external apps.
+    - Integrated "Select Photo" title and hidden FABs in Picker Mode.
+    - Added outbound "Share" functionality to `ImageDetailScreen` and `ImageDetailViewModel`.
+    - Verified with 43 total unit tests passing.
+- **Next Steps:** Project Wrap-up and Final Review.
 
 ### 2026-06-28: Phase 7 Completed
 - **Activity:** Implemented biometric/password security and architectural durability.

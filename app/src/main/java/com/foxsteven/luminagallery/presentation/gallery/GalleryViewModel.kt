@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,6 +48,9 @@ class GalleryViewModel @Inject constructor(
     val allTags: StateFlow<List<TagEntity>> = tagService.allTags
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    private val _isPickerMode = MutableStateFlow(value = false)
+    val isPickerMode: StateFlow<Boolean> = _isPickerMode.asStateFlow()
+
     private val _pendingImportUri = MutableStateFlow<Uri?>(null)
     val pendingImportUri: StateFlow<Uri?> = _pendingImportUri.asStateFlow()
 
@@ -66,6 +68,10 @@ class GalleryViewModel @Inject constructor(
 
     fun onImportCancel() {
         _pendingImportUri.value = null
+    }
+
+    fun setPickerMode(enabled: Boolean) {
+        _isPickerMode.value = enabled
     }
 
     fun onFilterUpdate(criteria: FilterCriteria) {
@@ -95,12 +101,6 @@ class GalleryViewModel @Inject constructor(
     fun onApplySavedCriteria(criteria: SavedCriteriaEntity) {
         viewModelScope.launch {
             galleryService.applySavedCriteria(criteria)
-        }
-    }
-
-    fun onDeleteImage(image: ImageEntity) {
-        viewModelScope.launch {
-            galleryService.deleteImage(image)
         }
     }
 }

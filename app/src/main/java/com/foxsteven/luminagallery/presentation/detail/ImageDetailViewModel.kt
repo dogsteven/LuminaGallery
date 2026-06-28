@@ -1,5 +1,8 @@
 package com.foxsteven.luminagallery.presentation.detail
 
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.FileProvider
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +15,7 @@ import com.foxsteven.luminagallery.presentation.navigation.ImageDetailRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 sealed interface ImageDetailUiState {
@@ -35,7 +39,7 @@ class ImageDetailViewModel @Inject constructor(
     private val imageId = route.imageId
 
     private val _image = MutableStateFlow<ImageEntity?>(null)
-    private val _isError = MutableStateFlow(false)
+    private val _isError = MutableStateFlow(value = false)
     private val _assignedTags = tagService.getTagsForImage(imageId)
     private val _allTags = tagService.allTags
 
@@ -88,5 +92,22 @@ class ImageDetailViewModel @Inject constructor(
             galleryService.deleteImage(image)
             onComplete()
         }
+    }
+
+    fun shareImage(context: Context) {
+        val image = _image.value ?: return
+        val file = File(context.filesDir, image.originalPath)
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(Intent.createChooser(intent, "Share Image"))
     }
 }

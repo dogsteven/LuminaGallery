@@ -7,6 +7,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,6 +46,10 @@ fun ImageDetailScreen(
                     }
                 },
                 actions = {
+                    val context = LocalContext.current
+                    IconButton(onClick = { viewModel.shareImage(context) }) {
+                        Icon(Icons.Default.Share, contentDescription = "Share Image")
+                    }
                     IconButton(onClick = { showDeleteDialog = true }) {
                         Icon(Icons.Default.Delete, contentDescription = "Delete Image")
                     }
