@@ -18,8 +18,8 @@ A fully functional, single-module Android application featuring:
 ---
 
 ## Project Status Summary
-- **Current Phase:** Phase 4: Full-screen Viewer & Zooming
-- **Overall Progress:** 37.5%
+- **Current Phase:** Phase 5: Tagging System
+- **Overall Progress:** 50%
 - **Last Updated:** 2026-06-28
 
 ---
@@ -31,7 +31,7 @@ A fully functional, single-module Android application featuring:
 | **Phase 1** | Project Skeleton & Data Models | ✅ Completed | Entities, DAOs, Room, and Hilt setup. |
 | **Phase 2** | Private Storage & Import Mechanism | ✅ Completed | Import images from system, generate thumbnails, save to private storage. |
 | **Phase 3** | Basic Gallery Grid & Thumbnail Loading | ✅ Completed | Scrollable grid with thumbnails loaded via Coil. |
-| **Phase 4** | Full-screen Viewer & Zooming | ⏳ Pending | |
+| **Phase 4** | Full-screen Viewer & Zooming | ✅ Completed | Navigation, Detail Screen, and Telephoto zoom integration. |
 | **Phase 5** | Tagging System | ⏳ Pending | |
 | **Phase 6** | Advanced Filtering & Saved Criteria | ⏳ Pending | |
 | **Phase 7** | Biometric Security & App Lock | ⏳ Pending | |
@@ -40,6 +40,16 @@ A fully functional, single-module Android application featuring:
 ---
 
 ## Implementation Log
+
+### 2026-06-28: Phase 4 Completed
+- **Activity:** Implemented full-screen viewer and pinch-to-zoom.
+- **Achievements:**
+    - Integrated Jetpack Compose Navigation with type-safe routes.
+    - Created `ImageDetailScreen` using Telephoto library for high-performance zooming.
+    - Implemented `ImageDetailViewModel` with comprehensive unit tests.
+    - Refactored UI architecture to support multi-screen navigation.
+    - Verified all 16 unit tests passing.
+- **Next Steps:** Begin Phase 5 (Tagging System).
 
 ### 2026-06-28: Phase 3 Completed
 - **Activity:** Implemented basic gallery grid and thumbnail loading.

@@ -70,6 +70,9 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
 
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
     // Ktor (HTTP Client)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)

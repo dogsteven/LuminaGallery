@@ -1,26 +1,21 @@
 package com.foxsteven.luminagallery
 
 import android.os.Bundle
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.foxsteven.luminagallery.application.GalleryService
+import com.foxsteven.luminagallery.presentation.detail.ImageDetailScreen
+import com.foxsteven.luminagallery.presentation.detail.ImageDetailViewModel
 import com.foxsteven.luminagallery.presentation.gallery.GalleryScreen
 import com.foxsteven.luminagallery.presentation.gallery.GalleryViewModel
+import com.foxsteven.luminagallery.presentation.navigation.GalleryRoute
+import com.foxsteven.luminagallery.presentation.navigation.ImageDetailRoute
 import com.foxsteven.luminagallery.ui.theme.LuminaGalleryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -37,32 +32,36 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         setContent {
             LuminaGalleryTheme {
+                val navController = rememberNavController()
                 val scope = rememberCoroutineScope()
-                val galleryViewModel: GalleryViewModel = viewModel()
 
-                val launcher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.PickVisualMedia()
-                ) { uri ->
-                    uri?.let {
-                        scope.launch {
-                            galleryService.importImage(it)
-                        }
+                NavHost(
+                    navController = navController,
+                    startDestination = GalleryRoute
+                ) {
+                    composable<GalleryRoute> {
+                        val viewModel: GalleryViewModel = hiltViewModel()
+                        GalleryScreen(
+                            viewModel = viewModel,
+                            onImageClick = { id ->
+                                navController.navigate(ImageDetailRoute(id))
+                            },
+                            onImportRequest = { uri ->
+                                scope.launch {
+                                    galleryService.importImage(uri)
+                                }
+                            }
+                        )
                     }
-                }
-
-                Scaffold(
-                    floatingActionButton = {
-                        FloatingActionButton(onClick = {
-                            launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                        }) {
-                            Icon(Icons.Default.Add, contentDescription = "Import Image")
-                        }
+                    composable<ImageDetailRoute> {
+                        val viewModel: ImageDetailViewModel = hiltViewModel()
+                        ImageDetailScreen(
+                            viewModel = viewModel,
+                            onBackClick = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
-                ) { innerPadding ->
-                    GalleryScreen(
-                        viewModel = galleryViewModel,
-                        modifier = Modifier.padding(innerPadding)
-                    )
                 }
             }
         }
