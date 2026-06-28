@@ -18,8 +18,8 @@ A fully functional, single-module Android application featuring:
 ---
 
 ## Project Status Summary
-- **Current Phase:** Preparation / Planning
-- **Overall Progress:** 0%
+- **Current Phase:** Phase 3: Basic Gallery Grid & Thumbnail Loading
+- **Overall Progress:** 25%
 - **Last Updated:** 2026-06-28
 
 ---
@@ -29,7 +29,7 @@ A fully functional, single-module Android application featuring:
 | Phase | Description | Status | Notes |
 | :--- | :--- | :--- | :--- |
 | **Phase 1** | Project Skeleton & Data Models | ✅ Completed | Entities, DAOs, Room, and Hilt setup. |
-| **Phase 2** | Private Storage & Import Mechanism | ⏳ Pending | |
+| **Phase 2** | Private Storage & Import Mechanism | ✅ Completed | Import images from system, generate thumbnails, save to private storage. |
 | **Phase 3** | Basic Gallery Grid & Thumbnail Loading | ⏳ Pending | |
 | **Phase 4** | Full-screen Viewer & Zooming | ⏳ Pending | |
 | **Phase 5** | Tagging System | ⏳ Pending | |
@@ -40,6 +40,15 @@ A fully functional, single-module Android application featuring:
 ---
 
 ## Implementation Log
+
+### 2026-06-28: Phase 2 Completed
+- **Activity:** Implemented private storage management and image import flow.
+- **Achievements:**
+    - Created `FileVaultManager` for secure file handling and thumbnail generation.
+    - Implemented `GalleryService` to coordinate the import process (storage + DB).
+    - Integrated system photo picker in `MainActivity`.
+    - Added unit tests for storage and service logic (11 total tests passing).
+- **Next Steps:** Begin Phase 3 (Basic Gallery Grid & Thumbnail Loading).
 
 ### 2026-06-28: Phase 1 Completed
 - **Activity:** Implemented core data models and persistence layer.

@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.kotlinx.datetime)
+    compileOnly(libs.errorprone.annotations)
 
     // Room
     implementation(libs.androidx.room.runtime)

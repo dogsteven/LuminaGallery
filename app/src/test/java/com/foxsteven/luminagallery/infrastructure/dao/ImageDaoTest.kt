@@ -1,4 +1,4 @@
-package com.foxsteven.luminagallery
+package com.foxsteven.luminagallery.infrastructure.dao
 
 import android.content.Context
 import androidx.room.Room
