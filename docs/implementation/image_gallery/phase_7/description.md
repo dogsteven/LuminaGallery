@@ -3,15 +3,15 @@
 ## Description
 Protect the gallery with biometric and device credential authentication using a UI-only overlay to maintain business logic isolation.
 
-## Tasks
+## Technical Scope / Expected Deliverables
 1.  **Infrastructure - BiometricManager:**
-    *   Wrapper for `BiometricPrompt` supporting both `BIOMETRIC_STRONG` and `DEVICE_CREDENTIAL`.
+    *   `BiometricPrompt` implementation supporting `BIOMETRIC_STRONG` and `DEVICE_CREDENTIAL`.
 2.  **Application - AuthenticationService:**
-    *   Logic for tracking auth status and session timeouts (2-minute grace period).
+    *   Auth status tracking and 2-minute grace period timeout logic.
 3.  **Presentation - Auth Overlay:**
-    *   A blocking overlay in `MainActivity` that requires authentication before showing any gallery content.
-4.  **Optimization - ViewModel Scoping:**
-    *   Scope `GalleryViewModel` and `TagViewModel` to `MainActivity` for persistent state across navigation.
+    *   Blocking `AuthScreen` overlay in `MainActivity` gating access to the gallery.
+4.  **Architecture - ViewModel Scoping:**
+    *   Activity-scoping for core ViewModels to ensure state persistence across navigation.
 
 ## Expected Output
 *   App requires fingerprint/face unlock or device password on launch.

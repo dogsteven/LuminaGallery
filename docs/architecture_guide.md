@@ -39,27 +39,3 @@ Implements the "how" for the Application layer.
 *   **Persistence (Room):** Implementation of data storage and retrieval.
 *   **Storage (FileVault):** Handles the physical moving and securing of image files in `filesDir`, as well as the generation and storage of thumbnails to optimize performance in the gallery grid.
 *   **Platform Services:** Biometric prompt implementations, FileProviders for sharing.
-
----
-
-## 3. Implementation Specifics
-
-### Dependency Injection (Hilt)
-Hilt is used to inject Infrastructure implementations into Application services, and Services into ViewModels.
-*   *Example:* `ImageGalleryService` receives `ImageRepository` (Room) and `FileVault` (Storage) via its constructor.
-
-### Threading & Coroutines
-*   All disk I/O and database operations are performed on `Dispatchers.IO`.
-*   The Application layer ensures that `Flows` are computed off the main thread.
-
-### Image Loading & Zooming
-*   **Coil** is used for image rendering. 
-*   **Telephoto (`ZoomableAsyncImage`)** is used to handle gestures (pinch-to-zoom, pan) and high-performance sub-sampling for large images.
-*   **Note:** A custom `Fetcher` is required to load images directly from the app's internal private storage, as they are not accessible via standard file paths for other apps.
-
-### Persistence & Data Isolation
-*   **Room Database** stores all image metadata and tagging relationships.
-*   Internal storage (`filesDir`) is used to store the actual image files, ensuring they are not indexed by the system gallery.
-
-### Security Implementation
-*   **Biometric Interceptor:** A component that sits between the Navigation and the Gallery UI. It prevents the `ImageGalleryService` from emitting data until the `SecurityService` reports a successful biometric check.

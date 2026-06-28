@@ -3,14 +3,13 @@
 ## Description
 This phase implements the logic to move images from the public device storage into the application's private `filesDir`.
 
-## Tasks
+## Technical Scope / Expected Deliverables
 1.  **Infrastructure - FileVault & Thumbnails:**
-    *   Create `FileVaultManager` to handle file operations (copying from Uri, deleting files, getting internal file references).
-    *   Implement thumbnail generation logic (downscaling images) to be stored alongside the original files.
+    *   `FileVaultManager` for secure file handling and downscaling thumbnails.
 2.  **Application - GalleryService (Part 1):**
-    *   Implement `importImage(uri: Uri)`: Use `FileVaultManager` to save the original file, generate a thumbnail, and use Room to save the metadata (including both paths).
+    *   `importImage(uri: Uri)` logic: Save original, generate thumbnail, save Room metadata.
 3.  **Basic UI for Import:**
-    *   A simple button in `MainActivity` to launch the system photo picker and trigger the import.
+    *   System photo picker integration in `MainActivity` to trigger imports.
 
 ## Expected Output
 *   Images can be selected from the system and copied to the app's private storage.

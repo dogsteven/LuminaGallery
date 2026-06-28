@@ -3,14 +3,13 @@
 ## Description
 Display the imported images in a high-performance grid.
 
-## Tasks
+## Technical Scope / Expected Deliverables
 1.  **Application - GalleryService (Part 2):**
-    *   Expose `Flow<List<Image>>` from the service.
+    *   Expose `Flow<List<Image>>` from the service for reactive UI updates.
 2.  **Infrastructure - Coil Integration:**
-    *   Implement a custom Coil `Fetcher`/`Decoder` if necessary to load images directly from private storage.
+    *   Coil configuration for loading images directly from private internal storage.
 3.  **Presentation - Main Grid:**
-    *   Create `GalleryScreen` using `LazyVerticalGrid`.
-    *   Optimize for performance with large datasets (keying, stable IDs).
+    *   `GalleryScreen` featuring `LazyVerticalGrid` optimized for performance (keying, stable IDs).
 
 ## Expected Output
 *   A scrollable grid showing thumbnails of all imported images.

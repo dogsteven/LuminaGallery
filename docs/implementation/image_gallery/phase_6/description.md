@@ -3,14 +3,15 @@
 ## Description
 Enable users to find images quickly using multiple criteria.
 
-## Tasks
+## Technical Scope / Expected Deliverables
 1.  **Application - Filter Logic:**
-    *   Update `GalleryService` to accept `SavedCriteria` for its image flow.
+    *   Reactive filtering logic in `GalleryService` using `SavedCriteria`.
 2.  **Infrastructure - Persistence (Filters):**
-    *   Implement saving and loading `SavedCriteria` entities.
+    *   Persistence layer for `SavedCriteria` entities.
 3.  **Presentation - Filter UI:**
-    *   A filter drawer or sheet to select tags, dates, and search text.
-    *   Ability to save the current filter setup.
+    *   Multi-criteria filter interface and saved criteria management.
+4.  **Robust Deletion:**
+    *   Cleanup logic for both database entries and physical storage upon image deletion.
 
 ## Expected Output
 *   Dynamic filtering of the main grid.

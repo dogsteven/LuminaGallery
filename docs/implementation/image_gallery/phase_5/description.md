@@ -3,14 +3,13 @@
 ## Description
 Implement categorization through custom tags.
 
-## Tasks
+## Technical Scope / Expected Deliverables
 1.  **Application - TaggingService:**
-    *   Logic for creating, deleting, and assigning tags to images.
+    *   Business logic for tag lifecycle and image-tag associations.
 2.  **Infrastructure - Persistence (Tags):**
-    *   Ensure Room handles cascading deletes for tags (removing associations).
+    *   Cascading delete logic in Room for automated cleanup.
 3.  **Presentation - Tag Management UI:**
-    *   UI to create/delete tags.
-    *   Interface in the detail screen to add/remove tags from a specific image.
+    *   Global tag management interface and per-image tagging BottomSheet.
 
 ## Expected Output
 *   Users can categorize images with tags.

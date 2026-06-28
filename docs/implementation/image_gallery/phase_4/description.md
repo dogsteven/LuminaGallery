@@ -3,13 +3,13 @@
 ## Description
 Allow users to view images in detail with standard gallery gestures.
 
-## Tasks
+## Technical Scope / Expected Deliverables
 1.  **Presentation - Detail Screen:**
-    *   Implement a full-screen image viewer.
+    *   Full-screen image viewer implementation.
 2.  **Infrastructure - Telephoto Integration:**
-    *   Use `ZoomableAsyncImage` for pinch-to-zoom and pan support.
+    *   `ZoomableAsyncImage` usage for high-performance pinch-to-zoom and pan support.
 3.  **Navigation:**
-    *   Set up Jetpack Navigation to move between the grid and the detail view.
+    *   Jetpack Navigation configuration for grid-to-detail transitions.
 
 ## Expected Output
 *   Users can tap a thumbnail to see the full image.
