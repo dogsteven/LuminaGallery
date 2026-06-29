@@ -111,4 +111,24 @@ class ImageDetailViewModelTest {
         val state = viewModel.uiState.value as ImageDetailUiState.Success
         assertEquals("New", state.image.description)
     }
+
+    @Test
+    fun `rotateImage should increment rotation by 90 degrees`() = runTest {
+        coEvery { galleryService.getImage(source, identifier) } returns null
+        val viewModel = ImageDetailViewModel(galleryService, tagService, savedStateHandle)
+        
+        assertEquals(0f, viewModel.rotation.value)
+        
+        viewModel.rotateImage()
+        assertEquals(90f, viewModel.rotation.value)
+        
+        viewModel.rotateImage()
+        assertEquals(180f, viewModel.rotation.value)
+        
+        viewModel.rotateImage()
+        assertEquals(270f, viewModel.rotation.value)
+        
+        viewModel.rotateImage()
+        assertEquals(0f, viewModel.rotation.value)
+    }
 }

@@ -1,9 +1,13 @@
 package com.foxsteven.luminagallery.presentation.detail
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -11,19 +15,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.foxsteven.luminagallery.presentation.detail.components.DetailContentSheet
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
 import java.io.File
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageDetailScreen(
     viewModel: ImageDetailViewModel,
-    onBackClick: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -36,7 +45,7 @@ fun ImageDetailScreen(
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -45,6 +54,9 @@ fun ImageDetailScreen(
                 },
                 actions = {
                     val context = LocalContext.current
+                    IconButton(onClick = viewModel::rotateImage) {
+                        Icon(Icons.AutoMirrored.Filled.RotateRight, contentDescription = "Rotate Image")
+                    }
                     IconButton(onClick = { viewModel.shareImage(context) }) {
                         Icon(Icons.Default.Share, contentDescription = "Share Image")
                     }
@@ -78,13 +90,45 @@ fun ImageDetailScreen(
                 is ImageDetailUiState.Success -> {
                     val context = LocalContext.current
                     val imageFile = File(context.filesDir, state.image.originalPath)
-                    
-                    ZoomableAsyncImage(
-                        model = imageFile,
-                        contentDescription = state.image.description,
-                        modifier = Modifier.fillMaxSize(),
-                        state = rememberZoomableImageState(rememberZoomableState())
-                    )
+                    val rotation by viewModel.rotation.collectAsStateWithLifecycle()
+
+                    val offsetY = remember { Animatable(0f) }
+                    val coroutineScope = rememberCoroutineScope()
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .offset { IntOffset(0, offsetY.value.roundToInt()) }
+                            .pointerInput(Unit) {
+                                detectDragGestures(
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        coroutineScope.launch {
+                                            offsetY.snapTo(offsetY.value + dragAmount.y)
+                                        }
+                                    },
+                                    onDragEnd = {
+                                        if (offsetY.value > 300f) {
+                                            onDismiss()
+                                        } else {
+                                            coroutineScope.launch {
+                                                offsetY.animateTo(0f, animationSpec = tween(300))
+                                            }
+                                        }
+                                    }
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ZoomableAsyncImage(
+                            model = imageFile,
+                            contentDescription = state.image.description,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .graphicsLayer { rotationZ = rotation },
+                            state = rememberZoomableImageState(rememberZoomableState())
+                        )
+                    }
 
                     if (showTagSheet) {
                         ModalBottomSheet(
@@ -119,7 +163,7 @@ fun ImageDetailScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.deleteImage(onBackClick)
+                        viewModel.deleteImage(onDismiss)
                         showDeleteDialog = false
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)

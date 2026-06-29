@@ -221,7 +221,7 @@ class MainActivity : FragmentActivity() {
                                     val viewModel: ImageDetailViewModel = hiltViewModel()
                                     ImageDetailScreen(
                                         viewModel = viewModel,
-                                        onBackClick = {
+                                        onDismiss = {
                                             navController.popBackStack()
                                         }
                                     )

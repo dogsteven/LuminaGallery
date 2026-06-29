@@ -44,6 +44,7 @@ class ImageDetailViewModel @Inject constructor(
     private val _isError = MutableStateFlow(value = false)
     private val _assignedTags = tagService.getTagsForImage(source, identifier)
     private val _allTags = tagService.allTags
+    private val _rotation = MutableStateFlow(0f)
 
     val uiState: StateFlow<ImageDetailUiState> = combine(_image, _isError, _assignedTags, _allTags) { image, isError, assigned, all ->
         when {
@@ -60,6 +61,8 @@ class ImageDetailViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ImageDetailUiState.Loading
     )
+
+    val rotation = _rotation.asStateFlow()
 
     init {
         loadImage()
@@ -86,6 +89,10 @@ class ImageDetailViewModel @Inject constructor(
         viewModelScope.launch {
             tagService.removeTagFromImage(source, identifier, tagName)
         }
+    }
+
+    fun rotateImage() {
+        _rotation.value = (_rotation.value + 90f) % 360f
     }
 
     fun updateDescription(description: String) {

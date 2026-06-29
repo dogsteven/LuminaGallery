@@ -18,7 +18,7 @@ A refined and polished version of the application featuring:
 
 ## Project Status Summary
 - **Current Phase:** Execution (Phase 4)
-- **Overall Progress:** 75%
+- **Overall Progress:** 95%
 - **Last Updated:** 2026-06-29
 
 ---
@@ -30,11 +30,19 @@ A refined and polished version of the application featuring:
 | **Phase 1** | Data Model Refactoring & Migration | ✅ Completed | Composite keys implemented; 43 tests passing. |
 | **Phase 2** | Scalable Navigation & Security | ✅ Completed | Side drawer migration and FLAG_SECURE. |
 | **Phase 3** | Unified Content Management | ✅ Completed | DetailContentSheet implemented; delete action relocated. |
-| **Phase 4** | Advanced Gallery Interactions | ⏳ Pending | Swipe-to-dismiss and image rotation. |
+| **Phase 4** | Advanced Gallery Interactions | ⏳ In Progress | Swipe-to-dismiss implemented; rotation issue being resolved. |
 
 ---
 
 ## Implementation Log
+
+### 2026-06-29: Phase 4 - Advanced Gallery Interactions
+- **Activity:** Implemented fluid gestures and image rotation controls in the detail view.
+- **Achievements:**
+    - Implemented a "Swipe-to-Dismiss" gesture using `pointerInput` and `detectDragGestures` with animated vertical offsets.
+    - Added 90-degree image rotation state and UI controls.
+    - Verified rotation logic with unit tests in `ImageDetailViewModelTest`.
+- **Status:** 95% completed. Currently addressing an issue where the rotation is applied to the gesture container instead of the image content, causing misaligned interactions.
 
 ### 2026-06-29: Phase 3 - Unified Content Management
 - **Activity:** Centralized image metadata and actions into a unified bottom sheet with optimized updates.
