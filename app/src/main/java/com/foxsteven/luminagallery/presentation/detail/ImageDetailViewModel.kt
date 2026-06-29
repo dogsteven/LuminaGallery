@@ -88,6 +88,13 @@ class ImageDetailViewModel @Inject constructor(
         }
     }
 
+    fun updateDescription(description: String) {
+        viewModelScope.launch {
+            galleryService.updateImageDescription(source, identifier, description)
+            _image.value = _image.value?.copy(description = description)
+        }
+    }
+
     fun deleteImage(onComplete: () -> Unit) {
         val image = _image.value ?: return
         viewModelScope.launch {

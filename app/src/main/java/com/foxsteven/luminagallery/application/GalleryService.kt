@@ -81,6 +81,11 @@ class GalleryService @Inject constructor(
         return imageDao.getImageByIdentifier(source, identifier)
     }
 
+    suspend fun updateImageDescription(source: String, identifier: UUID, description: String) {
+        val image = imageDao.getImageByIdentifier(source, identifier) ?: return
+        imageDao.insertImage(image.copy(description = description))
+    }
+
     suspend fun importImage(uri: Uri, description: String) {
         val originalPath = fileVaultManager.saveOriginal(uri)
         val thumbnailPath = fileVaultManager.generateThumbnail(originalPath)

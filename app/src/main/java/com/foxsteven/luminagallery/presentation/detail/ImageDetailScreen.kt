@@ -4,8 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -14,8 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.foxsteven.luminagallery.presentation.detail.components.DetailContentSheet
 import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
@@ -49,9 +47,6 @@ fun ImageDetailScreen(
                     val context = LocalContext.current
                     IconButton(onClick = { viewModel.shareImage(context) }) {
                         Icon(Icons.Default.Share, contentDescription = "Share Image")
-                    }
-                    IconButton(onClick = { showDeleteDialog = true }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete Image")
                     }
                     IconButton(onClick = { showTagSheet = true }) {
                         Icon(Icons.Default.Info, contentDescription = "Image Info")
@@ -97,11 +92,17 @@ fun ImageDetailScreen(
                             containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = MaterialTheme.colorScheme.onSurface
                         ) {
-                            TagSheetContent(
+                            DetailContentSheet(
+                                image = state.image,
                                 assignedTags = state.assignedTags,
                                 availableTags = state.availableTags,
                                 onAddTag = { viewModel.addTag(it) },
-                                onRemoveTag = viewModel::removeTag
+                                onRemoveTag = viewModel::removeTag,
+                                updateDescription = viewModel::updateDescription,
+                                onDeleteClick = {
+                                    showDeleteDialog = true
+                                    showTagSheet = false
+                                }
                             )
                         }
                     }
@@ -132,84 +133,5 @@ fun ImageDetailScreen(
                 }
             }
         )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun TagSheetContent(
-    assignedTags: List<com.foxsteven.luminagallery.data.model.TagEntity>,
-    availableTags: List<com.foxsteven.luminagallery.data.model.TagEntity>,
-    onAddTag: (String) -> Unit,
-    onRemoveTag: (String) -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .navigationBarsPadding()
-    ) {
-        Text(
-            text = "Tags",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        if (assignedTags.isEmpty()) {
-            Text(
-                text = "No tags assigned.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        } else {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                assignedTags.forEach { tag ->
-                    InputChip(
-                        selected = true,
-                        onClick = { onRemoveTag(tag.name) },
-                        label = { Text(tag.name) },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Remove Tag",
-                                modifier = Modifier.size(InputChipDefaults.IconSize)
-                            )
-                        }
-                    )
-                }
-            }
-        }
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-        Text(
-            text = "Available Tags",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        if (availableTags.isEmpty()) {
-            Text(
-                text = "No more tags available.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        } else {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                availableTags.forEach { tag ->
-                    AssistChip(
-                        onClick = { onAddTag(tag.name) },
-                        label = { Text(tag.name) }
-                    )
-                }
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }

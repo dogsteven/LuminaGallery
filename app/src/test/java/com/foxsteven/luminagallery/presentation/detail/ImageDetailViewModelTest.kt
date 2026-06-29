@@ -7,6 +7,7 @@ import com.foxsteven.luminagallery.application.TagService
 import com.foxsteven.luminagallery.data.model.ImageEntity
 import com.foxsteven.luminagallery.presentation.navigation.ImageDetailRoute
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -84,5 +85,30 @@ class ImageDetailViewModelTest {
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value is ImageDetailUiState.Error)
+    }
+
+    @Test
+    fun `updateDescription should call galleryService and update local state`() = runTest {
+        val image = ImageEntity(source = source, identifier = identifier, originalPath = "p1", thumbnailPath = "t1", description = "Old", timestamp = 0)
+        
+        coEvery { galleryService.getImage(source, identifier) } returns image
+        coEvery { galleryService.updateImageDescription(source, identifier, "New") } returns Unit
+
+        val viewModel = ImageDetailViewModel(galleryService, tagService, savedStateHandle)
+        
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.collect {}
+        }
+        advanceUntilIdle()
+
+        viewModel.updateDescription("New")
+        advanceUntilIdle()
+
+        coVerify { galleryService.updateImageDescription(source, identifier, "New") }
+        // Verify loadImage() is NOT called a second time (only once in init)
+        coVerify(exactly = 1) { galleryService.getImage(any(), any()) }
+
+        val state = viewModel.uiState.value as ImageDetailUiState.Success
+        assertEquals("New", state.image.description)
     }
 }
