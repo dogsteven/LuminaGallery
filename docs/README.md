@@ -4,6 +4,7 @@ Welcome to the LuminaGallery project documentation. This index serves as a map f
 
 ## 1. Project Overview & Rules
 - **[AGENTS.md](../AGENTS.md):** The primary entry point for all developers and agents. Contains project goals, tech stack, and operating rules.
+- **[Project State & Functionality Map](project_state.md):** A high-level summary of the current app state and feature set.
 
 ## 2. Guides & Standards
 - **[Architecture Guide](architecture_guide.md):** Detailed explanation of the Layered Architecture and development workflow.
