@@ -9,6 +9,7 @@ The "First Polishing" epic, completed on June 30, 2026, focused on refining the 
     - Standardized `Tag` and `SavedCriteria` entities with stable, human-readable primary keys.
 - **Scalable Navigation & UI:** 
     - Migrated from bottom navigation to a `ModalNavigationDrawer` to support a growing list of features.
+    - Implemented a **sectioned drawer structure** to categorize features (e.g., "Main" section for Gallery and Tags).
     - Implemented a consistent `TopAppBar` and standardized the look and feel of top-level destinations.
 - **Privacy & Security Enhancements:** 
     - Implemented `FLAG_SECURE` app-wide to prevent content exposure in the system task switcher and block unauthorized screenshots.

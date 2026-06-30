@@ -35,10 +35,10 @@ LuminaGallery is a secure, local-first private image gallery.
     - [Architecture Guide (Data Model Layer)](architecture_guide.md)
 
 ### 2.4 Navigation & State
-- **Structure:** Modern `ModalNavigationDrawer` for scalable feature access.
+- **Structure:** Modern `ModalNavigationDrawer` with **sectioned categories** for scalable feature access.
 - **Persistence:** Activity-scoped ViewModels ensure navigation and filter states persist throughout the session.
 - **Related Docs:**
-    - [First Polishing Summary (Phase 2)](implementation/first_polishing/summary.md)
+    - [First Polishing Summary](implementation/first_polishing/summary.md)
 
 ## 3. Technical Foundation
 - **Architecture:** Strict **Layered Architecture** (Data Model -> Application -> Infrastructure -> Presentation).

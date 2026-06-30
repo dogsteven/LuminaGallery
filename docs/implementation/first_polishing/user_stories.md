@@ -32,6 +32,9 @@ This document outlines the functional requirements of the **First Polishing** ep
 ### 3.1 Scalable Navigation Structure
 **As a user**, I want to navigate the application via a top bar and side drawer instead of a bottom bar, **so that** the app remains easy to navigate as its features and screens grow over time.
 
+### 3.2 Organized Feature Access (Late Request)
+**As a user**, I want my navigation options to be grouped into logical sections (like "Main"), **so that** I can quickly distinguish between core gallery features and secondary tools.
+
 ## 4. Security & Privacy
 
 ### 4.1 App Switcher Privacy

@@ -20,6 +20,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -124,22 +125,29 @@ class MainActivity : FragmentActivity() {
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val scope = rememberCoroutineScope()
 
-                    val topLevelDestinations = listOf(
-                        TopLevelDestination(
-                            name = "Gallery",
-                            route = GalleryRoute,
-                            selectedIcon = Icons.Filled.Photo,
-                            unselectedIcon = Icons.Outlined.Photo
-                        ),
-                        TopLevelDestination(
-                            name = "Tags",
-                            route = TagsRoute,
-                            selectedIcon = Icons.AutoMirrored.Filled.Label,
-                            unselectedIcon = Icons.AutoMirrored.Outlined.Label
+                    val galleryDestination = TopLevelDestination(
+                        name = "Gallery",
+                        route = GalleryRoute,
+                        selectedIcon = Icons.Filled.Photo,
+                        unselectedIcon = Icons.Outlined.Photo
+                    )
+                    val tagsDestination = TopLevelDestination(
+                        name = "Tags",
+                        route = TagsRoute,
+                        selectedIcon = Icons.AutoMirrored.Filled.Label,
+                        unselectedIcon = Icons.AutoMirrored.Outlined.Label
+                    )
+
+                    val sections = listOf(
+                        NavigationSection(
+                            title = "Main",
+                            destinations = listOf(galleryDestination, tagsDestination)
                         )
                     )
 
-                    val isTopLevelDestination = topLevelDestinations.any { destination ->
+                    val allDestinations = sections.flatMap { it.destinations }
+
+                    val isTopLevelDestination = allDestinations.any { destination ->
                         currentDestination?.hasRoute(destination.route::class) == true
                     }
 
@@ -149,31 +157,40 @@ class MainActivity : FragmentActivity() {
                         drawerContent = {
                             ModalDrawerSheet {
                                 Spacer(Modifier.height(12.dp))
-                                topLevelDestinations.forEach { destination ->
-                                    val selected = currentDestination?.hierarchy?.any {
-                                        it.hasRoute(destination.route::class)
-                                    } == true
-                                    NavigationDrawerItem(
-                                        label = { Text(destination.name) },
-                                        selected = selected,
-                                        onClick = {
-                                            scope.launch { drawerState.close() }
-                                            navController.navigate(destination.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        },
-                                        icon = {
-                                            Icon(
-                                                imageVector = if (selected) destination.selectedIcon else destination.unselectedIcon,
-                                                contentDescription = destination.name
-                                            )
-                                        },
-                                        modifier = Modifier.padding(horizontal = 12.dp)
+                                sections.forEach { section ->
+                                    Text(
+                                        text = section.title,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(horizontal = 28.dp, vertical = 8.dp)
                                     )
+                                    section.destinations.forEach { destination ->
+                                        val selected = currentDestination?.hierarchy?.any {
+                                            it.hasRoute(destination.route::class)
+                                        } == true
+                                        NavigationDrawerItem(
+                                            label = { Text(destination.name) },
+                                            selected = selected,
+                                            onClick = {
+                                                scope.launch { drawerState.close() }
+                                                navController.navigate(destination.route) {
+                                                    popUpTo(navController.graph.findStartDestination().id) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
+                                                }
+                                            },
+                                            icon = {
+                                                Icon(
+                                                    imageVector = if (selected) destination.selectedIcon else destination.unselectedIcon,
+                                                    contentDescription = destination.name
+                                                )
+                                            },
+                                            modifier = Modifier.padding(horizontal = 12.dp)
+                                        )
+                                    }
+                                    Spacer(Modifier.height(12.dp))
                                 }
                             }
                         }
@@ -181,7 +198,7 @@ class MainActivity : FragmentActivity() {
                         Scaffold(
                             topBar = {
                                 if (isTopLevelDestination) {
-                                    val currentTitle = topLevelDestinations.find { destination ->
+                                    val currentTitle = allDestinations.find { destination ->
                                         currentDestination?.hasRoute(destination.route::class) == true
                                     }?.name ?: "LuminaGallery"
 
@@ -261,4 +278,9 @@ data class TopLevelDestination(
     val route: Any,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
+)
+
+data class NavigationSection(
+    val title: String,
+    val destinations: List<TopLevelDestination>
 )

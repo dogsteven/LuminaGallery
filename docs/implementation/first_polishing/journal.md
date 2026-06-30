@@ -13,6 +13,7 @@ A refined and polished version of the application featuring:
 2.  **Modern Navigation & Visuals:** Migration to a navigation drawer, implementation of a `TopAppBar`, and content protection in the app switcher.
 3.  **Enhanced Metadata & Management:** A unified `ContentSheet` for comprehensive image information and secure deletion.
 4.  **Flexible Viewing:** Intuitive swipe-to-dismiss gesture and on-demand 90-degree image rotation.
+5.  **Sectioned Navigation:** Visual hierarchy in the side drawer for better feature organization.
 
 ---
 
@@ -35,6 +36,14 @@ A refined and polished version of the application featuring:
 ---
 
 ## Implementation Log
+
+### 2026-06-30: Additional Request - Sectioned Navigation
+- **Activity:** Refactored the navigation drawer to support grouped categories.
+- **Achievements:**
+    - Introduced `NavigationSection` data model to group `TopLevelDestination` items.
+    - Updated `MainActivity` drawer UI to render section headers (e.g., "Main") with Material 3 styling.
+    - Verified that navigation logic remains correct across all grouped destinations.
+- **Status:** 100% completed.
 
 ### 2026-06-30: Phase 4 - Advanced Gallery Interactions (Completion)
 - **Activity:** Resolved interaction issues and finalized gesture support.

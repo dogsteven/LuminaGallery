@@ -22,6 +22,7 @@ This document defines the functional and non-functional requirements for the **F
 ### 2.3 Visual Polish & Navigation
 *   **Navigation Migration:** Replace the existing bottom navigation bar with a navigation drawer (side drawer) to support a larger number of future screens and features.
 *   **Top Navigation Bar:** Implement a Material 3 `TopAppBar` that integrates with the side drawer, providing screen context and consistent navigation across the app.
+*   **Sectioned Navigation (Late Request):** Categorize navigation drawer items into distinct sections (e.g., "Main", "Tools") to provide visual hierarchy and prepare for future off-topic features.
 
 ### 2.4 Security & Privacy
 *   **App Switcher Privacy:** Implement `FLAG_SECURE` to ensure the application displays a black screen in the recent apps switcher and prevents screen captures.
