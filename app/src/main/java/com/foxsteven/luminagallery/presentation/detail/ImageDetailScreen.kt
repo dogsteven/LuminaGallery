@@ -15,15 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.foxsteven.luminagallery.presentation.detail.components.DetailContentSheet
-import me.saket.telephoto.zoomable.coil.ZoomableAsyncImage
-import me.saket.telephoto.zoomable.rememberZoomableImageState
-import me.saket.telephoto.zoomable.rememberZoomableState
+import com.github.panpf.zoomimage.CoilZoomAsyncImage
+import com.github.panpf.zoomimage.rememberCoilZoomState
 import java.io.File
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -95,6 +93,12 @@ fun ImageDetailScreen(
                     val offsetY = remember { Animatable(0f) }
                     val coroutineScope = rememberCoroutineScope()
 
+                    val zoomState = rememberCoilZoomState()
+
+                    LaunchedEffect(rotation) {
+                        zoomState.zoomable.rotate(rotation.roundToInt())
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -102,9 +106,12 @@ fun ImageDetailScreen(
                             .pointerInput(Unit) {
                                 detectDragGestures(
                                     onDrag = { change, dragAmount ->
-                                        change.consume()
-                                        coroutineScope.launch {
-                                            offsetY.snapTo(offsetY.value + dragAmount.y)
+                                        // Only allow vertical swipe if not zoomed in
+                                        if (zoomState.zoomable.transform.scale.scaleX <= 1.05f) {
+                                            change.consume()
+                                            coroutineScope.launch {
+                                                offsetY.snapTo(offsetY.value + dragAmount.y)
+                                            }
                                         }
                                     },
                                     onDragEnd = {
@@ -120,13 +127,11 @@ fun ImageDetailScreen(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        ZoomableAsyncImage(
+                        CoilZoomAsyncImage(
                             model = imageFile,
                             contentDescription = state.image.description,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .graphicsLayer { rotationZ = rotation },
-                            state = rememberZoomableImageState(rememberZoomableState())
+                            modifier = Modifier.fillMaxSize(),
+                            zoomState = zoomState
                         )
                     }
 

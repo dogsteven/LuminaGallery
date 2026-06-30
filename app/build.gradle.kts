@@ -62,8 +62,8 @@ dependencies {
     // Biometric
     implementation(libs.androidx.biometric)
 
-    // Telephoto
-    implementation(libs.telephoto.zoomable.image.coil)
+    // ZoomImage
+    implementation(libs.zoomimage.compose.coil)
 
     // Hilt
     implementation(libs.hilt.android)

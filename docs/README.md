@@ -32,6 +32,7 @@ Welcome to the LuminaGallery project documentation. This index serves as a map f
     - [Requirements](implementation/first_polishing/requirements.md)
     - [User Stories](implementation/first_polishing/user_stories.md)
     - [Epic Journal](implementation/first_polishing/journal.md)
+    - [Epic Summary](implementation/first_polishing/summary.md)
     - **Phases:**
         - [Phase 1: Data Model Refactoring & Migration](implementation/first_polishing/phase_1/description.md)
         - [Phase 2: Scalable Navigation & Security](implementation/first_polishing/phase_2/description.md)

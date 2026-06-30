@@ -33,9 +33,9 @@ This document outlines the technical standards and libraries used in LuminaGalle
 - Prepared for future backend synchronization.
 - Use Kotlinx Serialization for JSON parsing.
 
-### Image Loading: Coil & Telephoto
+### Image Loading: Coil & ZoomImage
 - **Coil:** Standard image loading and caching.
-- **Telephoto (`ZoomableAsyncImage`):** High-performance zooming and sub-sampling for large images.
+- **ZoomImage (`CoilZoomAsyncImage`):** High-performance zooming, rotation, and sub-sampling for large images.
 
 ---
 

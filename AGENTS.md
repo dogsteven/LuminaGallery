@@ -24,6 +24,7 @@ LuminaGallery is a private, personal image gallery application designed for secu
 - **Git Management:** Without being explicitly requested, you are strictly forbidden from manipulating git (e.g., commit, stage, reset, etc.).
 - **Code Hygiene:** Always check for and remove unused statements and imports. Avoid using deprecated APIs unless absolutely necessary, and justify their use if they are used.
 - **Documentation:** Always consult the `docs/` directory for detailed standards and historical context.
+- **Decision Authority:** I'm the only one who decides what do to, so shut the fuck up and don't ask me anything like "would you like me to do ..."
 
 ## Development Context for AI Agents
 
